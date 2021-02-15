@@ -49,6 +49,9 @@ private:
 	 * The single instance
 	 */
 	static CommunicationManager *singleInstance;
+
+	std::string host;
+	unsigned int port;
 };
 
 #endif /* COMMUNICATIONMANAGER_H_ */

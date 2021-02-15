@@ -34,6 +34,9 @@ public:
 	friend std::ostream& operator<<(std::ostream &os, const Request &req);
 private:
 	ByteBuffer *payload = NULL;
+	ClientId clientId;
+	unsigned short version;
+	unsigned short requestCode;
 };
 #endif /* REQUEST_H_ */
 

@@ -5,37 +5,39 @@
  *      Author: Roy Dar
  */
 
-#ifndef REQUESTREADER_H_
-#define REQUESTREADER_H_
+#ifndef REQUESTWRITER_H_
+#define REQUESTWRITER_H_
 
 #include "Request.h"
 #include <boost/asio.hpp>
 
+using boost::asio::ip::tcp;
+
 /*
- * RequestReader
+ * RequestWriter
  * -------------
  * Reads the data from the socket and returns a "request" object
  */
-class RequestReader
+class RequestWriter
 {
 public:
 	/*
 	 * Ctor
 	 */
-	RequestReader(boost::asio::ip::tcp::socket *socket);
+	RequestWriter(boost::shared_ptr<tcp::socket> socket);
 
 	/*
 	 * Reads from the socket and returns the request
 	 */
-	Request* readRequest();
+	void writeRequest(Request*);
 
 	/*
 	 * Dtor
 	 */
-	virtual ~RequestReader();
+	virtual ~RequestWriter();
 private:
 	// The socket to use
-	boost::asio::ip::tcp::socket *socket;
+	boost::shared_ptr<tcp::socket> socket;
 };
-#endif /* REQUESTREADER_H_ */
+#endif /* REQUESTWRITER_H_ */
 

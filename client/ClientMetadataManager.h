@@ -23,6 +23,11 @@ public:
 	virtual ~ClientMetadataManager();
 private:
 	ClientMetadataManager();
+	std::string clientName;
+	ClientId clientId;
+	bool isRegistred;
+	PrivatePublicKeyPair privatePublicKeyPair;
+	static ClientMetadataManager *singleInstance;
 };
 
 #endif /* CLIENTMETADATAMANAGER_H_ */

@@ -63,7 +63,7 @@ public:
 	/*
 	 * Reads an str from the socket. the size of the str will be read first
 	 */
-	std::string readStr();
+	std::string readStr(unsigned short size);
 
 	/*
 	 * Writes an str from the socket. the size of the str will be written first
@@ -75,12 +75,14 @@ public:
 	 * This will not read the data from the socket, but instead wrap it and allows to work
 	 * with chunks
 	 */
-	ByteBuffer* readBytes();
+	ByteBuffer* readBytes(unsigned int size);
 
 	/*
 	 * Writes the full data from the bytes buffer into the socket
 	 */
 	void writeBytes(ByteBuffer *data);
+
+	void writeBytes(unsigned short *buffer, unsigned int len);
 private:
 	// The socket to be used
 	boost::asio::ip::tcp::socket *socket;

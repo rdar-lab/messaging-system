@@ -6,13 +6,45 @@
  */
 
 #include "EncryptionUtils.h"
+#include <cstring>
+#include <string>
 
 EncryptionUtils::EncryptionUtils() {
-	// TODO Auto-generated constructor stub
 
 }
 
 EncryptionUtils::~EncryptionUtils() {
-	// TODO Auto-generated destructor stub
 }
 
+PrivatePublicKeyPair EncryptionUtils::generateKeypair(unsigned int algorithm) {
+	// TODO: implement this
+	return PrivatePublicKeyPair();
+}
+
+SymmetricKey EncryptionUtils::generateSymmetricKey(unsigned int algorithm) {
+	// TODO: implement this
+	return SymmetricKey();
+}
+
+unsigned int EncryptionUtils::pkiEncrypt(unsigned short algorithm,
+		PublicKey publicKey, void *source, unsigned int sourceLen,
+		void *destination) {
+	// TODO: implement this
+	std::copy((char*)source, (char*)source+sourceLen, (char*)destination);
+	return sourceLen;
+}
+
+unsigned int EncryptionUtils::pkiDecrypt(int algorithm, PrivateKey privateKey,
+		void *source, unsigned int sourceLen, void *destination) {
+	// TODO: implement this
+	std::copy((char*)source, (char*)source+sourceLen, (char*)destination);
+	return sourceLen;
+}
+
+unsigned int EncryptionUtils::encryptDecrypt(unsigned short algorithm,
+		SymmetricKey key, void *source, unsigned int sourceLen,
+		void *destination) {
+	// TODO: implement this
+	std::copy((char*)source, (char*)source+sourceLen, (char*)destination);
+	return sourceLen;
+}

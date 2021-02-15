@@ -17,22 +17,22 @@ class ClientDatastore {
 public:
 	static ClientDatastore* getInstance();
 	static void setInstance(ClientDatastore* instance);
-	std::list<ClientDef> getAllClients();
-	void clearClients();
-	void addClient(ClientDef client);
-	ClientDef removeClient(ClientId clientId);
-	ClientDef getClient(ClientId clientId);
-	int clientExists(ClientId clientId);
-	int clientExists(std::string name);
-	ClientDef getClientByName(std::string name);
-	void updateClient(ClientDef client);
+	virtual std::list<ClientDef> getAllClients() = 0 ;
+	virtual void clearClients() = 0;
+	virtual void addClient(ClientDef client) = 0;
+	virtual ClientDef removeClient(ClientId clientId) = 0;
+	virtual ClientDef getClient(ClientId clientId) = 0;
+	virtual int clientExists(ClientId clientId) = 0;
+	virtual int clientExists(std::string name) = 0;
+	virtual ClientDef getClientByName(std::string name) = 0;
+	virtual void updateClient(ClientDef client) = 0;
 	void printClientsList();
 
 	virtual ~ClientDatastore();
-private:
+protected:
 	ClientDatastore();
+private:
 	static ClientDatastore *singleInstance;
-	std::map<ClientId, ClientDef> clients;
 };
 
 #endif /* CLIENTDATASTORE_H_ */

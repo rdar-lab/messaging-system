@@ -6,7 +6,6 @@
  */
 
 #include "SocketByteBuffer.h"
-#include "GeneralException.h"
 
 SocketByteBuffer::SocketByteBuffer(boost::asio::ip::tcp::socket *socket,
 		unsigned int dataLen)
@@ -33,7 +32,7 @@ unsigned short int SocketByteBuffer::readData(void *destinationBuffer,
 			boost::asio::buffer(destinationBuffer, lenToRead));
 	if (amount <= 0)
 	{
-		throw GeneralException(
+		throw std::runtime_error(
 				"Invalid state detected. Amount read is not positive");
 	}
 

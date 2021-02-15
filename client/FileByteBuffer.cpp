@@ -8,7 +8,6 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 #include "FileByteBuffer.h"
-#include "GeneralException.h"
 
 namespace fs = boost::filesystem;
 
@@ -31,7 +30,7 @@ unsigned short int FileByteBuffer::readData(char *destinationBuffer,
 
 	if (amount <= 0)
 	{
-		throw GeneralException(
+		throw std::runtime_error(
 				"Invalid state detected. Amount read is not positive");
 	}
 

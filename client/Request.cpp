@@ -15,50 +15,37 @@ Request::~Request()
 	}
 }
 
-Request::Request(unsigned short version, unsigned int userId, unsigned short op,
-		std::string fileName, ByteBuffer *payload)
-{
+Request::Request(ClientId clientId, unsigned short version,
+		unsigned short requestCode, ByteBuffer *payload) {
+	this->clientId = clientId;
 	this->version = version;
-	this->userId = userId;
-	this->op = op;
-	this->fileName = fileName;
+	this->requestCode = requestCode;
 	this->payload = payload;
 }
 
-unsigned short Request::getVersion() const
-{
+ClientId Request::getClientId() const {
+	return clientId;
+}
+
+unsigned short Request::getVersion() const {
 	return version;
 }
 
-unsigned int Request::getUserId() const
-{
-	return userId;
+unsigned short Request::getRequestCode() const {
+	return requestCode;
 }
 
-unsigned short Request::getOp() const
-{
-	return op;
-}
-
-std::string Request::getFileName() const
-{
-	return this->fileName;
-}
-
-ByteBuffer* Request::getPayload() const
-{
-	return this->payload;
+ByteBuffer* Request::getPayload() const {
+	return payload;
 }
 
 std::ostream& operator<<(std::ostream &os, const Request &req)
 {
 	os << std::string("version:");
 	os << std::to_string(req.getVersion());
-	os << std::string(" ,usedId=");
-	os << std::to_string(req.getUserId());
-	os << std::string(" ,op=");
-	os << std::to_string(req.getOp());
-	os << std::string(" ,fileName=");
-	os << req.getFileName();
+	os << std::string(", client id:");
+	os << req.getClientId();
+	os << std::string(" ,request code=");
+	os << req.getRequestCode();
 	return os;
 }

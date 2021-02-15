@@ -11,20 +11,60 @@
 #include <string>
 #include <iostream>
 #include "Constants.h"
+#include <iostream>
+#include <cstring>
+#include <string>
+#include "Utils.h"
 
 
 template <int N> class BytesContainer {
 public:
-	BytesContainer<N>();
-	BytesContainer<N>(unsigned short* source);
-	BytesContainer<N>(std::string str);
-	BytesContainer<N>(const BytesContainer<N> &other);
+	BytesContainer<N>(){
+		std::memset(this->buffer, 0, sizeof(this->buffer));
+	}
+	BytesContainer<N>(unsigned short* source){
+		std::copy(source, source + N, this->buffer);
+	}
 
-	virtual ~BytesContainer<N>();
-	int write(void *destination) const;
-	BytesContainer<N> &operator =(const BytesContainer<N> &other);
-	std::string toString();
-	int isEmpty();
+	BytesContainer<N>(std::string str){
+		Utils::readBytesFromStr(str, this->buffer, N);
+	}
+
+	BytesContainer<N>(const BytesContainer<N> &other){
+		std::copy(other.buffer, other.buffer + N, this->buffer);
+	}
+
+	virtual ~BytesContainer<N>(){
+
+	}
+
+	int write(void *destination) const{
+		std::copy((char*)this->buffer, (char*)this->buffer + N, (char*)destination);
+		return N;
+	}
+
+	BytesContainer<N> &operator =(const BytesContainer<N> &other){
+		if (this == &other){
+			return *this;
+		}
+
+		std::copy(other.buffer, other.buffer + N, this->buffer);
+		return *this;
+	}
+
+	std::string toString() const{
+		return Utils::writeBytestoStr(buffer, N);
+	}
+
+	int isEmpty(){
+		for (int index=0; index<N; index++){
+			if (this->buffer[index] != 0){
+				return false;
+			}
+		}
+		return true;
+	}
+
 	template <int N2> friend bool operator<(const BytesContainer<N2>& first, const BytesContainer<N2>& second);
 	template <int N2> friend bool operator>(const BytesContainer<N2>& first, const BytesContainer<N2>& second);
 	template <int N2> friend bool operator==(const BytesContainer<N2>& first, const BytesContainer<N2>& second);
@@ -33,5 +73,61 @@ public:
 private:
 	unsigned short buffer[N];
 };
+
+
+template <int N>
+inline
+bool operator<(const BytesContainer<N>& first, const BytesContainer<N>& second){
+	for (int index=0; index<N; index++){
+		if (first.buffer[index] < second.buffer[index]){
+			return true;
+		}
+	}
+	return false;
+}
+
+template <int N>
+inline
+bool operator>(const BytesContainer<N>& first, const BytesContainer<N>& second){
+	for (int index=0; index<N; index++){
+		if (first.buffer[index] > second.buffer[index]){
+			return true;
+		}
+	}
+	return false;
+}
+
+template <int N>
+inline
+bool operator==(const BytesContainer<N>& first, const BytesContainer<N>& second){
+	for (int index=0; index<N; index++){
+		if (first.buffer[index] != second.buffer[index]){
+			return false;
+		}
+	}
+	return true;
+}
+
+template <int N>
+inline
+bool operator!=(const BytesContainer<N>& first, const BytesContainer<N>& second){
+	for (int index=0; index<N; index++){
+		if (first.buffer[index] != second.buffer[index]){
+			return true;
+		}
+	}
+	return false;
+}
+
+
+template<int N>
+inline
+std::ostream& operator <<(std::ostream &os, const BytesContainer<N> &container)
+{
+	os << container.toString();
+	return os;
+}
+
+
 
 #endif /* BYTESCONTAINER_H_ */

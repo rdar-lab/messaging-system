@@ -7,7 +7,6 @@
 
 #include "ByteBuffer.h"
 #include "Constants.h"
-#include "GeneralException.h"
 
 ByteBuffer::ByteBuffer()
 {
@@ -25,7 +24,7 @@ void ByteBuffer::sendToStream(std::ostream &os)
 		short amount = this->readData(buffer, BUFFER_SIZE);
 		if (amount <= 0)
 		{
-			throw GeneralException(
+			throw std::runtime_error(
 					"Invalid state detected, read data returned non positive value");
 		}
 		else

@@ -14,12 +14,18 @@
 
 class PrivatePublicKeyPair {
 public:
+	PrivatePublicKeyPair();
 	PrivatePublicKeyPair(PrivateKey privateKey, PublicKey publicKey);
 	PrivatePublicKeyPair(std::string str);
+	PrivatePublicKeyPair(const PrivatePublicKeyPair &other);
 	virtual ~PrivatePublicKeyPair();
-	PrivateKey getPrivateKey();
-	PublicKey getPublicKey();
+	PrivateKey getPrivateKey() const;
+	PublicKey getPublicKey() const;
 	std::string toString();
+	PrivatePublicKeyPair &operator =(const PrivatePublicKeyPair &other);
+private:
+	PrivateKey privateKey;
+	PublicKey publicKey;
 };
 
 #endif /* PRIVATEPUBLICKEYPAIR_H_ */

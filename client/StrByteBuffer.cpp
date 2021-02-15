@@ -32,7 +32,7 @@ unsigned short int StrByteBuffer::readData(void *destinationBuffer,
 	std::string subStr = this->str.substr(this->offset, amountToRead);
 	const char *charArr = subStr.c_str();
 
-	std::copy(charArr, charArr + (amountToRead), destinationBuffer);
+	std::copy(charArr, charArr + (amountToRead), (char*)destinationBuffer);
 
 	this->offset = this->offset + amountToRead;
 	return amountToRead;

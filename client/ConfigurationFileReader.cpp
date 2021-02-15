@@ -9,7 +9,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "GeneralException.h"
 
 ConfigurationFileReader::ConfigurationFileReader(
 		std::string configurationFileName)
@@ -42,14 +41,14 @@ ConfigurationFileReader::ConfigurationFileReader(
 
 		if (error_text.length() > 0)
 		{
-			throw GeneralException(
+			throw std::runtime_error(
 					"Error parsing configuration file: " + error_text);
 		}
 	}
 
 	else
 	{
-		throw GeneralException(
+		throw std::runtime_error(
 				"Unable to open configuration file " + configurationFileName);
 	}
 }
