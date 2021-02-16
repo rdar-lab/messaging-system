@@ -22,17 +22,17 @@ using boost::asio::ip::tcp;
 class Response
 {
 public:
-	Response(boost::shared_ptr<tcp::socket> socket, unsigned short version, unsigned short responseCode, ByteBuffer *payload);
+	Response(boost::shared_ptr<tcp::socket> socket, unsigned char version, unsigned short responseCode, ByteBuffer *payload);
 	virtual ~Response();
 
-	unsigned short getVersion() const;
+	unsigned char getVersion() const;
 	unsigned short getResponseCode() const;
 	ByteBuffer* getPayload() const;
 
 	friend std::ostream& operator<<(std::ostream &os, const Response &resp);
 private:
 	ByteBuffer *payload = NULL;
-	unsigned short version;
+	unsigned char version;
 	unsigned short responseCode;
 	boost::shared_ptr<tcp::socket> socket;
 };

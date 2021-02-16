@@ -44,7 +44,7 @@ void ClientActionInvoker::performRegister(){
 	PrivatePublicKeyPair keyPair = EncryptionUtils::generateKeypair(ENCRYPTION_ALGORITHM_RSA);
 	PublicKey publicKey = keyPair.getPublicKey();
 
-	unsigned short payload[STR_SIZE+PUBLIC_KEY_SIZE];
+	unsigned char payload[STR_SIZE+PUBLIC_KEY_SIZE];
 	std::memset(payload, 0, sizeof(payload));
 	std::strncpy((char *)payload, clientName.c_str(), STR_SIZE-1);
 	publicKey.write(&payload[STR_SIZE]);
@@ -57,11 +57,12 @@ void ClientActionInvoker::performRegister(){
 		if (resp->getResponseCode() == RESPONSE_CODE_REG_SUCCESS)
 		{
 			std::cout << "* Registration successful" << std::endl;
-			unsigned short clientIdBuffer[CLIENT_ID_SIZE];
+			unsigned char clientIdBuffer[CLIENT_ID_SIZE];
 			resp->getPayload()->readData(clientIdBuffer, CLIENT_ID_SIZE);
 			ClientMetadataManager::getInstance()->update(clientName, ClientId(clientIdBuffer), keyPair);
+			std::cout << "Client ID: " << ClientMetadataManager::getInstance()->getClientId() << std::endl;
 		} else {
-			std::cout << "ERR: Got unexpected response code" << resp->getResponseCode() << std::endl;
+			std::cout << "ERR: Got unexpected response code: " << resp->getResponseCode() << std::endl;
 		}
 	} catch (std::exception &exp)
 	{
@@ -78,23 +79,25 @@ void ClientActionInvoker::performGetClientsList(){
 	try{
 		if (resp->getResponseCode() == RESPONSE_CODE_CLIENTS_LIST)
 		{
-			while (resp->getPayload()->getBytesLeft()>0)
-			{
-				char nameBuff[STR_SIZE];
-				resp->getPayload()->readData(nameBuff, STR_SIZE);
-				std::string name(nameBuff);
-				unsigned short clientIdBuffer[CLIENT_ID_SIZE];
-				resp->getPayload()->readData(clientIdBuffer, CLIENT_ID_SIZE);
-				ClientId clientId(clientIdBuffer);
-				ClientDef client(clientId,  name);
-				if (!ClientDatastore::getInstance()->clientExists(clientId)){
-					ClientDatastore::getInstance()->addClient(client);
+			if (resp->getPayload()!=NULL){
+				while (resp->getPayload()->getBytesLeft()>0)
+				{
+					unsigned char clientIdBuffer[CLIENT_ID_SIZE];
+					resp->getPayload()->readData(clientIdBuffer, CLIENT_ID_SIZE);
+					ClientId clientId(clientIdBuffer);
+					char nameBuff[STR_SIZE];
+					resp->getPayload()->readData(nameBuff, STR_SIZE);
+					std::string name(nameBuff);
+					ClientDef client(clientId,  name);
+					if (!ClientDatastore::getInstance()->clientExists(clientId)){
+						ClientDatastore::getInstance()->addClient(client);
+					}
 				}
 			}
 			ClientDatastore::getInstance()->printClientsList();
 
 		} else {
-			std::cout << "ERR: Got unexpected response code" << resp->getResponseCode() << std::endl;
+			std::cout << "ERR: Got unexpected response code: " << resp->getResponseCode() << std::endl;
 		}
 	} catch (std::exception &exp)
 	{
@@ -125,7 +128,7 @@ void ClientActionInvoker::performGetClientPublicKey(){
 	}
 
 	ClientId clientId = client.getId();
-	unsigned short payload[CLIENT_ID_SIZE];
+	unsigned char payload[CLIENT_ID_SIZE];
 	std::memset(payload, 0, sizeof(payload));
 	clientId.write(payload);
 
@@ -135,7 +138,7 @@ void ClientActionInvoker::performGetClientPublicKey(){
 	try{
 		if (resp->getResponseCode() == RESPONSE_CODE_CLIENT_PUBLIC_KEY)
 		{
-			unsigned short clientIdBuffer[CLIENT_ID_SIZE];
+			unsigned char clientIdBuffer[CLIENT_ID_SIZE];
 			resp->getPayload()->readData(clientIdBuffer, CLIENT_ID_SIZE);
 			ClientId responseClientId(clientIdBuffer);
 
@@ -144,7 +147,7 @@ void ClientActionInvoker::performGetClientPublicKey(){
 				std::cout << "ERR: Response client ID does not match the request" << std::endl;
 			} else
 			{
-				unsigned short publicKeyBuffer[PUBLIC_KEY_SIZE];
+				unsigned char publicKeyBuffer[PUBLIC_KEY_SIZE];
 				resp->getPayload()->readData(publicKeyBuffer, PUBLIC_KEY_SIZE);
 				PublicKey publicKey(publicKeyBuffer);
 				client.setPublicKey(publicKey);
@@ -153,7 +156,7 @@ void ClientActionInvoker::performGetClientPublicKey(){
 			}
 		} else
 		{
-			std::cout << "ERR: Got unexpected response code" << resp->getResponseCode() << std::endl;
+			std::cout << "ERR: Got unexpected response code: " << resp->getResponseCode() << std::endl;
 		}
 	} catch (std::exception &exp)
 	{
@@ -169,107 +172,109 @@ void ClientActionInvoker::performGetMessages(){
 	try{
 		if (resp->getResponseCode() == RESPONSE_CODE_LIST_OF_MESSAGES)
 		{
-			while (resp->getPayload()->getBytesLeft()>0)
-			{
-				unsigned short clientIdBuffer[CLIENT_ID_SIZE];
-				resp->getPayload()->readData(clientIdBuffer, CLIENT_ID_SIZE);
-				ClientId messageClientId(clientIdBuffer);
-
-				ClientDef messageFromClient;
-				if (!ClientDatastore::getInstance()->clientExists(messageClientId)){
-					std::cout << "ERR: Got unknown message client id: " << messageClientId << std::endl;
-					messageFromClient = ClientDef(messageClientId, "--UNKNOWN--");
-				} else {
-					messageFromClient = ClientDatastore::getInstance()->getClient(messageClientId);
-				}
-
-				std::cout << "From: " << messageFromClient.getName() << std::endl;
-
-				unsigned short messageIdBuffer[MESSAGE_ID_SIZE];
-				resp->getPayload()->readData(messageIdBuffer, MESSAGE_ID_SIZE);
-				unsigned int messageId = Utils::convertToNum(messageIdBuffer, MESSAGE_ID_SIZE);
-
-				std::cout << "Msg ID: " << messageId << std::endl;
-
-				unsigned short messageType = resp->getPayload()->readByte();
-
-				unsigned short messageLenBuffer[MESSAGE_LENGTH_SIZE];
-				resp->getPayload()->readData(messageLenBuffer, MESSAGE_LENGTH_SIZE);
-				unsigned int messageLen = Utils::convertToNum(messageLenBuffer, MESSAGE_LENGTH_SIZE);
-
-				if (messageLen > MAX_MSG_BODY_BYTES)
+			if (resp->getPayload()!=NULL){
+				while (resp->getPayload()->getBytesLeft()>0)
 				{
-					throw std::runtime_error("Max message len exceeded");
+					unsigned char clientIdBuffer[CLIENT_ID_SIZE];
+					resp->getPayload()->readData(clientIdBuffer, CLIENT_ID_SIZE);
+					ClientId messageClientId(clientIdBuffer);
+
+					ClientDef messageFromClient;
+					if (!ClientDatastore::getInstance()->clientExists(messageClientId)){
+						std::cout << "ERR: Got unknown message client id: " << messageClientId << std::endl;
+						messageFromClient = ClientDef(messageClientId, "--UNKNOWN--");
+					} else {
+						messageFromClient = ClientDatastore::getInstance()->getClient(messageClientId);
+					}
+
+					std::cout << "From: " << messageFromClient.getName() << std::endl;
+
+					unsigned char messageIdBuffer[MESSAGE_ID_SIZE];
+					resp->getPayload()->readData(messageIdBuffer, MESSAGE_ID_SIZE);
+					unsigned int messageId = Utils::convertToNum(messageIdBuffer, MESSAGE_ID_SIZE);
+
+					std::cout << "Msg ID: " << messageId << std::endl;
+
+					unsigned char messageType = resp->getPayload()->readByte();
+
+					unsigned char messageLenBuffer[MESSAGE_LENGTH_SIZE];
+					resp->getPayload()->readData(messageLenBuffer, MESSAGE_LENGTH_SIZE);
+					unsigned int messageLen = Utils::convertToNum(messageLenBuffer, MESSAGE_LENGTH_SIZE);
+
+					if (messageLen > MAX_MSG_BODY_BYTES)
+					{
+						throw std::runtime_error("Max message len exceeded");
+					}
+
+					std::cout << "Content:" << std::endl;
+
+					switch (messageType){
+					case MESSAGE_TYPE_ENC_KEY_REQUEST:
+						{
+							if (messageLen > 0)
+							{
+								throw std::runtime_error("Message len incorrect. expected length of 0");
+							}
+
+							std::cout << "Request for symmetric key" << std::endl;
+						}
+						break;
+					case MESSAGE_TYPE_ENC_KEY_RESP:
+						{
+							if (messageLen != MESSAGE_LENGTH_SIZE)
+							{
+								throw std::runtime_error("Message len incorrect. expected SYMMETRIC_KEY_SIZE");
+							}
+
+							if (messageFromClient.getSymmetricKey().isEmpty())
+							{
+								unsigned char encryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
+								unsigned char decryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
+								resp->getPayload()->readData(encryptedKeyBuffer, SYMMETRIC_KEY_SIZE);
+								EncryptionUtils::pkiDecrypt(
+										ENCRYPTION_ALGORITHM_RSA,
+										ClientMetadataManager::getInstance()->getPrivatePublicKeyPair().getPrivateKey(),
+										encryptedKeyBuffer,
+										MESSAGE_LENGTH_SIZE,
+										decryptedKeyBuffer);
+
+								SymmetricKey key(decryptedKeyBuffer);
+								messageFromClient.setSymmetricKey(key);
+								ClientDatastore::getInstance()->updateClient(messageFromClient);
+
+								std::cout << "Symmetric key received" << std::endl;
+							}
+							else
+							{
+								std::cout << "Symmetric key received, but ignored (already exists for client)" << std::endl;
+							}
+						}
+						break;
+					case MESSAGE_TYPE_TEXT_MESSAGE:
+						{
+							char messageBuffer[messageLen];
+							resp->getPayload()->readData(messageBuffer, messageLen);
+							std::string msgText(messageBuffer);
+							std::cout << msgText << std::endl;
+						}
+						break;
+					case MESSAGE_TYPE_FILE_MESSAGE:
+						// TODO: implement me
+						{
+
+						}
+
+						break;
+					default:
+						std::cout << "ERROR: message type unknown: " << messageType << std::endl;
+					}
+					std::cout << "----<EOM>-----" << std::endl;
 				}
-
-				std::cout << "Content:" << std::endl;
-
-				switch (messageType){
-				case MESSAGE_TYPE_ENC_KEY_REQUEST:
-					{
-						if (messageLen > 0)
-						{
-							throw std::runtime_error("Message len incorrect. expected length of 0");
-						}
-
-						std::cout << "Request for symmetric key" << std::endl;
-					}
-					break;
-				case MESSAGE_TYPE_ENC_KEY_RESP:
-					{
-						if (messageLen != MESSAGE_LENGTH_SIZE)
-						{
-							throw std::runtime_error("Message len incorrect. expected SYMMETRIC_KEY_SIZE");
-						}
-
-						if (messageFromClient.getSymmetricKey().isEmpty())
-						{
-							unsigned short encryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
-							unsigned short decryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
-							resp->getPayload()->readData(encryptedKeyBuffer, SYMMETRIC_KEY_SIZE);
-							EncryptionUtils::pkiDecrypt(
-									ENCRYPTION_ALGORITHM_RSA,
-									ClientMetadataManager::getInstance()->getPrivatePublicKeyPair().getPrivateKey(),
-									encryptedKeyBuffer,
-									MESSAGE_LENGTH_SIZE,
-									decryptedKeyBuffer);
-
-							SymmetricKey key(decryptedKeyBuffer);
-							messageFromClient.setSymmetricKey(key);
-							ClientDatastore::getInstance()->updateClient(messageFromClient);
-
-							std::cout << "Symmetric key received" << std::endl;
-						}
-						else
-						{
-							std::cout << "Symmetric key received, but ignored (already exists for client)" << std::endl;
-						}
-					}
-					break;
-				case MESSAGE_TYPE_TEXT_MESSAGE:
-					{
-						char messageBuffer[messageLen];
-						resp->getPayload()->readData(messageBuffer, messageLen);
-						std::string msgText(messageBuffer);
-						std::cout << msgText << std::endl;
-					}
-					break;
-				case MESSAGE_TYPE_FILE_MESSAGE:
-					// TODO: implement me
-					{
-
-					}
-
-					break;
-				default:
-					std::cout << "ERROR: message type unknown: " << messageType << std::endl;
-				}
-				std::cout << "----<EOM>-----" << std::endl;
+			} else {
+				std::cout << "---- INBOX EMPTY -----" << std::endl;
 			}
-			ClientDatastore::getInstance()->printClientsList();
-
 		} else {
-			std::cout << "ERR: Got unexpected response code" << resp->getResponseCode() << std::endl;
+			std::cout << "ERR: Got unexpected response code: " << resp->getResponseCode() << std::endl;
 		}
 	} catch (std::exception &exp)
 	{
@@ -278,9 +283,9 @@ void ClientActionInvoker::performGetMessages(){
 	delete resp;
 }
 
-void ClientActionInvoker::sendMessage(ClientDef destinationClient, unsigned short messageType, void *messageContent, unsigned int messageLen){
+void ClientActionInvoker::sendMessage(ClientDef destinationClient, unsigned char messageType, void *messageContent, unsigned int messageLen){
 	unsigned int payloadLen = messageLen + CLIENT_ID_SIZE + MESSAGE_ID_SIZE + 1;
-	unsigned short payload[payloadLen];
+	unsigned char payload[payloadLen];
 	std::memset(payload, 0, sizeof(payload));
 	destinationClient.getId().write(payload);
 	payload[CLIENT_ID_SIZE] = messageType;
@@ -316,7 +321,7 @@ void ClientActionInvoker::performSendTextMessage(){
 	std::cout << "Enter message: ";
 	std::cin >> messageText;
 
-	unsigned short encryptedMessageBuffer[messageText.length()+EXTRA_MESSAGE_BUFFER];
+	unsigned char encryptedMessageBuffer[messageText.length()+EXTRA_MESSAGE_BUFFER];
 	std::memset(encryptedMessageBuffer, 0, sizeof(encryptedMessageBuffer));
 	unsigned int encryptedTextLen = EncryptionUtils::encryptDecrypt(
 			ENCRYPTION_ALGORITHM_AES,
@@ -330,6 +335,13 @@ void ClientActionInvoker::performSendTextMessage(){
 
 void ClientActionInvoker::performSendRequestForSymmetricKey(){
 	ClientDef client = promptAndGetClient();
+
+	if (client.getPublicKey().isEmpty()){
+		std::cout << "ERR: client public key not loaded. Request it first" << std::endl;
+		return;
+	}
+
+
 	if (!client.getSymmetricKey().isEmpty()){
 		std::cout << "ERR: client symmetric key already loaded" << std::endl;
 		return;
@@ -351,9 +363,9 @@ void ClientActionInvoker::performSendSymmetricKey(){
 		ClientDatastore::getInstance()->updateClient(client);
 	}
 
-	unsigned short decryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
+	unsigned char decryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
 	client.getSymmetricKey().write(decryptedKeyBuffer);
-	unsigned short encryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
+	unsigned char encryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
 	unsigned int encrypterdMsgLen = EncryptionUtils::pkiEncrypt(
 			ENCRYPTION_ALGORITHM_RSA,
 			client.getPublicKey(),

@@ -38,7 +38,7 @@ class RequestHandler:
 
     def __handle_registration_request(self, req):
         client_name = req.get_payload_map().get(REQUEST_PAYLOAD_CLIENT_NAME)
-        if client_name is None or len(client_name < 2):
+        if client_name is None or len(client_name) < 2:
             raise Exception("Client name is invalid. got={}".format(client_name))
 
         public_key = req.get_payload_map().get(REQUEST_PAYLOAD_PUBLIC_KEY)
@@ -75,7 +75,10 @@ class RequestHandler:
         client_pk = client.get_client_public_key()
 
         response_code = RESPONSE_CODE_CLIENT_PUBLIC_KEY
-        response_payload_map = {RESPONSE_PAYLOAD_PUBLIC_KEY: client_pk}
+        response_payload_map = {
+            RESPONSE_PAYLOAD_CLIENT_ID: client_id,
+            RESPONSE_PAYLOAD_PUBLIC_KEY: client_pk
+        }
 
         return response_code, response_payload_map
 

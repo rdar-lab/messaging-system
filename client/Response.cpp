@@ -25,7 +25,7 @@ std::ostream& operator<<(std::ostream &os, const Response &resp)
 	return os;
 }
 
-Response::Response(boost::shared_ptr<tcp::socket> socket, unsigned short version, unsigned short responseCode,
+Response::Response(boost::shared_ptr<tcp::socket> socket, unsigned char version, unsigned short responseCode,
 		ByteBuffer *payload) {
 	this->socket = socket;
 	this->version = version;
@@ -33,7 +33,7 @@ Response::Response(boost::shared_ptr<tcp::socket> socket, unsigned short version
 	this->payload = payload;
 }
 
-unsigned short Response::getVersion() const {
+unsigned char Response::getVersion() const {
 	return version;
 }
 

@@ -15,8 +15,8 @@ Request::~Request()
 	}
 }
 
-Request::Request(ClientId clientId, unsigned short version,
-		unsigned short requestCode, ByteBuffer *payload) {
+Request::Request(ClientId clientId, unsigned char version,
+		unsigned char requestCode, ByteBuffer *payload) {
 	this->clientId = clientId;
 	this->version = version;
 	this->requestCode = requestCode;
@@ -27,11 +27,11 @@ ClientId Request::getClientId() const {
 	return clientId;
 }
 
-unsigned short Request::getVersion() const {
+unsigned char Request::getVersion() const {
 	return version;
 }
 
-unsigned short Request::getRequestCode() const {
+unsigned char Request::getRequestCode() const {
 	return requestCode;
 }
 

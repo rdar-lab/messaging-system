@@ -14,7 +14,7 @@
 class PublicKey : public BytesContainer<PUBLIC_KEY_SIZE>{
 public:
 	PublicKey() : BytesContainer(){};
-	PublicKey(unsigned short* source):BytesContainer(source){};
+	PublicKey(unsigned char* source):BytesContainer(source){};
 	PublicKey(std::string str):BytesContainer(str){};
 	PublicKey(const PublicKey &other):BytesContainer(other){};
 };

@@ -18,40 +18,19 @@ class ServerCommunicationManager:
     def __init__(self, storage_manager: StorageManager, port: int):
         self.__storage_manager = storage_manager
         self.__port = port
-        self.__sel = selectors.DefaultSelector()
 
     def start_server(self):
         _logger.info("Starting server at port {}".format(self.__port))
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind(("0.0.0.0", self.__port))
         sock.listen(CONNECTIONS_BACKLOG)
-        sock.setblocking(False)
-        self.__sel.register(sock, selectors.EVENT_READ, data=None)
 
         while True:
-            events = self.__sel.select(timeout=None)
-            for key, mask in events:
-                if key.data is None:
-                    self.__accept_connection(key, mask)
-                else:
-                    client_thread = threading.Thread(target=self.__handle_data, args=(key, mask))
-                    client_thread.start()
+            client_sock, addr = sock.accept()
+            client_thread = threading.Thread(target=self.__handle_data, args=(client_sock, addr))
+            client_thread.start()
 
-    def __accept_connection(self, key, mask):
-        sock = key.fileobj
-        conn, addr = sock.accept()
-        _logger.info("Got connection from {}".format(addr))
-        conn.setblocking(False)
-        data = types.SimpleNamespace(addr=addr)
-        events = selectors.EVENT_READ
-        self.__sel.register(conn, events, data=data)
-
-    def __handle_data(self, key, mask):
-        sock = key.fileobj
-        self.__sel.unregister(sock)
-        data = key.data
-        addr = data.addr
-
+    def __handle_data(self, sock, addr):
         try:
             request_reader = RequestReader(sock)
             req = request_reader.read_request()

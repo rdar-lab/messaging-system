@@ -23,7 +23,7 @@ RequestWriter::~RequestWriter()
 void RequestWriter::writeRequest(Request* req)
 {
 	CommunicationSerilizationHelper helper(&(*this->socket));
-	unsigned short clientIdBuffer[CLIENT_ID_SIZE];
+	unsigned char clientIdBuffer[CLIENT_ID_SIZE];
 	req->getClientId().write(clientIdBuffer);
 	helper.writeBytes(clientIdBuffer, CLIENT_ID_SIZE);
 

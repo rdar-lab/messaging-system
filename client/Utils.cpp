@@ -47,13 +47,18 @@ void Utils::convertToBytes(unsigned int num, void *buff, unsigned short sizeOfBu
 }
 
 std::string Utils::writeBytestoStr(const void *buff, unsigned short sizeOfBuffer) {
-	std::stringstream ss;
-	ss << std::hex << std::setfill('0');
-	for (int i = 0; i < sizeOfBuffer; ++i)
+	char const hex_chars[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
+	std::string res = "";
+	for( int i = 0; i < sizeOfBuffer; ++i )
 	{
-	    ss << std::setw(2) << static_cast<unsigned>(((char*)buff)[i]);
+	    unsigned char const byte = ((char*)buff)[i];
+
+	    res += hex_chars[ ( byte & 0xF0 ) >> 4 ];
+	    res += hex_chars[ ( byte & 0x0F ) >> 0 ];
 	}
-	return ss.str();
+
+	return res;
 }
 
 int char2int(char input)

@@ -23,7 +23,7 @@ ClientMetadataManager::ClientMetadataManager() {
 			this->clientName = line;
 
 			getline(clientMetadataFile, line);
-			this->clientId = clientId;
+			this->clientId = ClientId(line);
 
 			getline(clientMetadataFile, line);
 			this->privatePublicKeyPair = PrivatePublicKeyPair(line);
@@ -73,9 +73,9 @@ void ClientMetadataManager::update(std::string clientName, ClientId clientId,
 	{
 		try
 		{
-			clientMetadataFile << this->clientName << std::endl;
-			clientMetadataFile << this->clientId << std::endl;
-			clientMetadataFile << this->privatePublicKeyPair.toString() << std::endl;
+			clientMetadataFile << clientName << std::endl;
+			clientMetadataFile << clientId << std::endl;
+			clientMetadataFile << privatePublicKeyPair.toString() << std::endl;
 			fileWrote = true;
 		} catch (std::exception &exp)
 		{

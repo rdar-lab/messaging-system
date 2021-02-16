@@ -34,7 +34,7 @@ void ByteBuffer::sendToStream(std::ostream &os)
 	}
 }
 
-unsigned short ByteBuffer::readByte()
+unsigned char ByteBuffer::readByte()
 {
 	if (this->getBytesLeft()==0){
 		throw std::runtime_error("EOS");

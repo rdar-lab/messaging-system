@@ -22,7 +22,7 @@ ResponseReader::~ResponseReader()
 Response * ResponseReader::readResponse()
 {
 	CommunicationSerilizationHelper helper(&(*socket));
-	unsigned short version = helper.readByte();
+	unsigned char version = helper.readByte();
 	unsigned short responseCode = helper.readShort();
 	unsigned int payloadSize = helper.readInt();
 	ByteBuffer *payload = NULL;

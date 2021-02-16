@@ -14,7 +14,7 @@
 class PrivateKey : public BytesContainer<PRIVATE_KEY_SIZE>{
 public:
 	PrivateKey() : BytesContainer(){};
-	PrivateKey(unsigned short* source):BytesContainer(source){};
+	PrivateKey(unsigned char* source):BytesContainer(source){};
 	PrivateKey(std::string str):BytesContainer(str){};
 	PrivateKey(const PrivateKey &other):BytesContainer(other){};
 };

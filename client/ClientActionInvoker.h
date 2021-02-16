@@ -18,7 +18,7 @@ public:
 	virtual ~ClientActionInvoker();
 private:
 	ClientDef promptAndGetClient();
-	void sendMessage(ClientDef destinationClient, unsigned short messageType, void *messageContent, unsigned int messageLen);
+	void sendMessage(ClientDef destinationClient, unsigned char messageType, void *messageContent, unsigned int messageLen);
 	void performRegister();
 	void performGetClientsList();
 	void performGetClientPublicKey();

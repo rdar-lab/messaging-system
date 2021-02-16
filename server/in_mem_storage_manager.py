@@ -1,3 +1,4 @@
+import copy
 import logging
 import threading
 from datetime import datetime
@@ -18,10 +19,14 @@ class InMemStorageManager(StorageManager):
         self.__lock = threading.Lock()
 
     def get_all_clients(self) -> dict:
-        return self.__clients
+        return copy.deepcopy(self.__clients)
 
     def get_client(self, client_id) -> Client:
-        return self.__clients.get(client_id)
+        client = self.__clients.get(client_id)
+        if client is None:
+            # noinspection PyTypeChecker
+            return None
+        return copy.deepcopy(client)
 
     def add_client(self, client_name, client_public_key) -> Client:
         for client in self.__clients.values():
@@ -70,11 +75,11 @@ class InMemStorageManager(StorageManager):
         return msg
 
     def get_messages(self, client_id, limit=0) -> list:
-        messages = self.__messages[client_id].values()
+        messages = list(self.__messages[client_id].values())
         if 0 < limit < len(messages):
             messages = messages[:limit]
 
-        return messages
+        return copy.deepcopy(messages)
 
     def remove_messages(self, messages_to_remove=None):
         _logger.info("Removing messages: {}".format(messages_to_remove))

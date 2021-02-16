@@ -59,7 +59,7 @@ class RequestPayloadParser:
         }
 
     def __parse_send_message_req_params(self):
-        if not self.__payload_size < 16 + 1 + 4:
+        if self.__payload_size < 16 + 1 + 4:
             raise Exception("Incorrect payload size. got={}".format(self.__payload_size))
 
         client_id = self.__helper.read_bytes(16)
@@ -73,8 +73,8 @@ class RequestPayloadParser:
             raise Exception("Incorrect payload size. does not match message size. got={}".format(message_size))
 
         if message_type == MESSAGE_TYPE_ENC_KEY_REQUEST:
-            if not message_type == 0:
-                raise Exception("Incorrect message size. should be 0")
+            if not message_size == 0:
+                raise Exception("Incorrect message size. should be 0. instead got {}".format(message_size))
             else:
                 message_body = ""
         elif message_type == MESSAGE_TYPE_ENC_KEY_RESP or message_type == MESSAGE_TYPE_TEXT_MESSAGE:

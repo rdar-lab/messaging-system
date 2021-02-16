@@ -22,21 +22,21 @@ class Request
 public:
 	Request(
 			ClientId clientId,
-			unsigned short version,
-			unsigned short requestCode,
+			unsigned char version,
+			unsigned char requestCode,
 			ByteBuffer *payload);
 	virtual ~Request();
 
 	ClientId getClientId() const;
-	unsigned short getVersion() const;
-	unsigned short getRequestCode() const;
+	unsigned char getVersion() const;
+	unsigned char getRequestCode() const;
 	ByteBuffer* getPayload() const;
 	friend std::ostream& operator<<(std::ostream &os, const Request &req);
 private:
 	ByteBuffer *payload = NULL;
 	ClientId clientId;
-	unsigned short version;
-	unsigned short requestCode;
+	unsigned char version;
+	unsigned char requestCode;
 };
 #endif /* REQUEST_H_ */
 

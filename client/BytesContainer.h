@@ -22,7 +22,7 @@ public:
 	BytesContainer<N>(){
 		std::memset(this->buffer, 0, sizeof(this->buffer));
 	}
-	BytesContainer<N>(unsigned short* source){
+	BytesContainer<N>(unsigned char* source){
 		std::copy(source, source + N, this->buffer);
 	}
 
@@ -71,12 +71,11 @@ public:
 	template <int N2> friend bool operator!=(const BytesContainer<N2>& first, const BytesContainer<N2>& second);
 	template <int N2> friend std::ostream& operator <<(std::ostream &os, const BytesContainer<N2> &container);
 private:
-	unsigned short buffer[N];
+	unsigned char buffer[N];
 };
 
 
 template <int N>
-inline
 bool operator<(const BytesContainer<N>& first, const BytesContainer<N>& second){
 	for (int index=0; index<N; index++){
 		if (first.buffer[index] < second.buffer[index]){
@@ -87,7 +86,6 @@ bool operator<(const BytesContainer<N>& first, const BytesContainer<N>& second){
 }
 
 template <int N>
-inline
 bool operator>(const BytesContainer<N>& first, const BytesContainer<N>& second){
 	for (int index=0; index<N; index++){
 		if (first.buffer[index] > second.buffer[index]){
@@ -98,7 +96,6 @@ bool operator>(const BytesContainer<N>& first, const BytesContainer<N>& second){
 }
 
 template <int N>
-inline
 bool operator==(const BytesContainer<N>& first, const BytesContainer<N>& second){
 	for (int index=0; index<N; index++){
 		if (first.buffer[index] != second.buffer[index]){
@@ -109,7 +106,6 @@ bool operator==(const BytesContainer<N>& first, const BytesContainer<N>& second)
 }
 
 template <int N>
-inline
 bool operator!=(const BytesContainer<N>& first, const BytesContainer<N>& second){
 	for (int index=0; index<N; index++){
 		if (first.buffer[index] != second.buffer[index]){
@@ -121,7 +117,6 @@ bool operator!=(const BytesContainer<N>& first, const BytesContainer<N>& second)
 
 
 template<int N>
-inline
 std::ostream& operator <<(std::ostream &os, const BytesContainer<N> &container)
 {
 	os << container.toString();

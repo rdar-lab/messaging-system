@@ -14,7 +14,7 @@
 class SymmetricKey : public BytesContainer<SYMMETRIC_KEY_SIZE>{
 public:
 	SymmetricKey() : BytesContainer(){};
-	SymmetricKey(unsigned short* source):BytesContainer(source){};
+	SymmetricKey(unsigned char* source):BytesContainer(source){};
 	SymmetricKey(std::string str):BytesContainer(str){};
 	SymmetricKey(const SymmetricKey &other):BytesContainer(other){};
 };

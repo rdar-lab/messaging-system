@@ -28,6 +28,14 @@ int main() {
 			std::cout << "Server configuration: " << host << ":" << port << std::endl;
 			CommunicationManager::getInstance()->setParams(host, port);
 
+			if (ClientMetadataManager::getInstance()->isRegistered()){
+				std::cout << "Client ID: " << ClientMetadataManager::getInstance()->getClientId() << std::endl;
+				std::cout << "Client name: " << ClientMetadataManager::getInstance()->getClientName() << std::endl;
+				std::cout << "Client Public Key: " << ClientMetadataManager::getInstance()->getPrivatePublicKeyPair().getPublicKey() << std::endl;
+			} else {
+				std::cout << "* NOT REGISTERED *" << std::endl;
+			}
+
 			InMemClientDatastore inMemDatastore;
 			ClientDatastore::setInstance(&inMemDatastore);
 
@@ -36,8 +44,8 @@ int main() {
 			int exitInd = false;
 
 			while (!exitInd){
-					int selectedOption = menuManger.showMenuAndGetUserAction();
 					try{
+						int selectedOption = menuManger.showMenuAndGetUserAction();
 						exitInd = invoker.performAction(selectedOption);
 					}
 					catch (std::exception &exp){

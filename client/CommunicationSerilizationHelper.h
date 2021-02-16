@@ -33,12 +33,12 @@ public:
 	/*
 	 * Reads an unsigned number of size of 1 byte
 	 */
-	unsigned short readByte();
+	unsigned char readByte();
 
 	/*
 	 * Writes an unsigned number of size of 1 byte
 	 */
-	void writeByte(unsigned short data);
+	void writeByte(unsigned char data);
 
 	/*
 	 * Reads an unsigned number of size of 2 byte
@@ -82,7 +82,7 @@ public:
 	 */
 	void writeBytes(ByteBuffer *data);
 
-	void writeBytes(unsigned short *buffer, unsigned int len);
+	void writeBytes(unsigned char *buffer, unsigned int len);
 private:
 	// The socket to be used
 	boost::asio::ip::tcp::socket *socket;

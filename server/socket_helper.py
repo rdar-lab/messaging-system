@@ -65,11 +65,13 @@ class SockHelper:
             raise Exception("Str len is bigger than the maximum allowed")
 
         data = self.__read_binary(size)
-        return str(struct.Struct('{0}s'.format(size)).unpack(data)[0], encoding="UTF-8")
+        result_str = str(struct.Struct('{0}s'.format(size)).unpack(data)[0], encoding="UTF-8")
+        result_str = result_str[:result_str.index('\x00')]
+        return result_str
 
     def write_str(self, string, size):
         data_raw = bytes(string, encoding="UTF-8")
-        data = struct.Struct('{0}s'.format(len(size))).pack(data_raw)
+        data = struct.Struct('{0}s'.format(size)).pack(data_raw)
 
         self.__write_binary(data)
 

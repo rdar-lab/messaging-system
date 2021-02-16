@@ -15,7 +15,7 @@ class ClientId : public BytesContainer<CLIENT_ID_SIZE>
 {
 public:
 	ClientId() : BytesContainer(){};
-	ClientId(unsigned short* source):BytesContainer(source){};
+	ClientId(unsigned char* source):BytesContainer(source){};
 	ClientId(std::string str):BytesContainer(str){};
 	ClientId(const ClientId &other):BytesContainer(other){};
 };

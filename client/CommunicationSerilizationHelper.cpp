@@ -48,12 +48,12 @@ CommunicationSerilizationHelper::~CommunicationSerilizationHelper()
 {
 }
 
-unsigned short CommunicationSerilizationHelper::readByte()
+unsigned char CommunicationSerilizationHelper::readByte()
 {
 	return readNum(socket, 1);
 }
 
-void CommunicationSerilizationHelper::writeByte(unsigned short data)
+void CommunicationSerilizationHelper::writeByte(unsigned char data)
 {
 	writeNum(socket, data, 1);
 }
@@ -119,7 +119,7 @@ ByteBuffer* CommunicationSerilizationHelper::readBytes(unsigned int size)
 	return new SocketByteBuffer(this->socket, size);
 }
 
-void CommunicationSerilizationHelper::writeBytes(unsigned short *buffer, unsigned int len){
+void CommunicationSerilizationHelper::writeBytes(unsigned char *buffer, unsigned int len){
 	size_t bytesWrote = boost::asio::write(*socket,
 			boost::asio::buffer(buffer, len));
 	if (bytesWrote != len)
