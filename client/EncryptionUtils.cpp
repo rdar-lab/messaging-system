@@ -18,12 +18,12 @@ EncryptionUtils::~EncryptionUtils() {
 
 PrivatePublicKeyPair EncryptionUtils::generateKeypair(unsigned int algorithm) {
 	// TODO: implement this
-	return PrivatePublicKeyPair();
+	return PrivatePublicKeyPair(PrivateKey("1111111111111111111111111"), PublicKey("1111111111111111111111111"));
 }
 
 SymmetricKey EncryptionUtils::generateSymmetricKey(unsigned int algorithm) {
 	// TODO: implement this
-	return SymmetricKey();
+	return SymmetricKey("111111111111111111111111111");
 }
 
 unsigned int EncryptionUtils::pkiEncrypt(unsigned short algorithm,

@@ -75,7 +75,7 @@ void ClientMetadataManager::update(std::string clientName, ClientId clientId,
 		{
 			clientMetadataFile << clientName << std::endl;
 			clientMetadataFile << clientId << std::endl;
-			clientMetadataFile << privatePublicKeyPair.toString() << std::endl;
+			clientMetadataFile << pkiKey.toString() << std::endl;
 			fileWrote = true;
 		} catch (std::exception &exp)
 		{

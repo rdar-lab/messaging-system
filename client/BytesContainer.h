@@ -81,6 +81,10 @@ bool operator<(const BytesContainer<N>& first, const BytesContainer<N>& second){
 		if (first.buffer[index] < second.buffer[index]){
 			return true;
 		}
+
+		if (first.buffer[index] > second.buffer[index]){
+			return false;
+		}
 	}
 	return false;
 }
@@ -91,7 +95,11 @@ bool operator>(const BytesContainer<N>& first, const BytesContainer<N>& second){
 		if (first.buffer[index] > second.buffer[index]){
 			return true;
 		}
-	}
+
+		if (first.buffer[index] < second.buffer[index]){
+			return false;
+		}
+}
 	return false;
 }
 

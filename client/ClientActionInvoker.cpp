@@ -221,7 +221,7 @@ void ClientActionInvoker::performGetMessages(){
 						break;
 					case MESSAGE_TYPE_ENC_KEY_RESP:
 						{
-							if (messageLen != MESSAGE_LENGTH_SIZE)
+							if (messageLen != SYMMETRIC_KEY_SIZE)
 							{
 								throw std::runtime_error("Message len incorrect. expected SYMMETRIC_KEY_SIZE");
 							}

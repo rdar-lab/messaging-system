@@ -97,7 +97,7 @@ class RequestHandler:
         if message_body is None:
             raise Exception("Message text is invalid. got={}".format(message_body))
 
-        msg = self.__storage_manager.add_message(to_client_id, from_client_id, message_type, message_type)
+        msg = self.__storage_manager.add_message(to_client_id, from_client_id, message_type, message_body)
         msg_id = msg.get_message_id()
 
         response_code = RESPONSE_CODE_MESSAGE_SENT
