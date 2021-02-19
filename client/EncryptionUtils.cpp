@@ -49,6 +49,33 @@ PrivatePublicKeyPair EncryptionUtils::generateKeypair(unsigned int algorithm) {
 	return PrivatePublicKeyPair(PrivateKey(privateKeyBytes), PublicKey(publicKeyBytes));
 }
 
+PublicKey EncryptionUtils::generatePublicFromPrivate(unsigned int algorithm,
+		PrivateKey privateKey) {
+	unsigned char privateKeyBytes[PRIVATE_KEY_SIZE];
+	std::memset(privateKeyBytes, 0, sizeof(privateKeyBytes));
+	privateKey.write(privateKeyBytes);
+
+	CryptoPP::RSA::PrivateKey cpPrivateKey;
+	CryptoPP::ArraySource privateSource((const unsigned char*)privateKeyBytes, PRIVATE_KEY_SIZE, true);
+	cpPrivateKey.Load(privateSource);
+
+	CryptoPP::RSA::PublicKey publicKey(cpPrivateKey);
+
+	unsigned char publicKeyBytes[PUBLIC_KEY_SIZE];
+	std::memset(publicKeyBytes, 0, sizeof(publicKeyBytes));
+	CryptoPP::ArraySink publicSink(publicKeyBytes, PUBLIC_KEY_SIZE);
+	publicKey.Save(publicSink);
+
+	#ifdef ENC_DEBUG
+		std::cout << "PrivateKey:" << Utils::writeBytestoStr(privateKeyBytes, PRIVATE_KEY_SIZE) << std::endl;
+		std::cout << "PublicKey:"  << Utils::writeBytestoStr(publicKeyBytes, PUBLIC_KEY_SIZE) << std::endl;
+	#endif
+
+	return PublicKey(publicKeyBytes);
+}
+
+
+
 SymmetricKey EncryptionUtils::generateSymmetricKey(unsigned int algorithm) {
 	CryptoPP::AutoSeededRandomPool prng;
 	unsigned char key[SYMMETRIC_KEY_SIZE];

@@ -8,7 +8,7 @@
 #ifndef ENCRYPTIONUTILS_H_
 #define ENCRYPTIONUTILS_H_
 
-#define ENC_DEBUG
+//#define ENC_DEBUG
 
 #include "PrivatePublicKeyPair.h"
 #include "SymmetricKey.h"
@@ -16,6 +16,8 @@
 class EncryptionUtils {
 public:
 	static PrivatePublicKeyPair generateKeypair(unsigned int algorithm);
+	static PublicKey generatePublicFromPrivate(unsigned int algorithm, PrivateKey privateKey);
+
 	static SymmetricKey generateSymmetricKey(unsigned int algorithm);
 
 	static unsigned int pkiEncrypt(

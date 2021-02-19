@@ -16,6 +16,8 @@ public:
 	static void convertToBytes(unsigned int num, void *buff, unsigned short sizeOfBuffer);
 	static std::string writeBytestoStr(const void *buff, unsigned short sizeOfBuffer);
 	static void readBytesFromStr(std::string source, void *buff, unsigned short sizeOfBuffer);
+	static std::string base64Encode(const void *buff, unsigned short sizeOfBuffer);
+	static unsigned short base64Decode(std::string b64, const void *buff, unsigned short sizeOfBuffer);
 	virtual ~Utils();
 private:
 	Utils();

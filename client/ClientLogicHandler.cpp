@@ -216,7 +216,7 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 					break;
 				case MESSAGE_TYPE_TEXT_MESSAGE:
 					{
-						char messageBuffer[messageLen];
+						unsigned char messageBuffer[messageLen];
 						resp->getPayload()->readData(messageBuffer, messageLen);
 
 						unsigned char decryptedMessageBuffer[messageLen+EXTRA_MESSAGE_BUFFER];

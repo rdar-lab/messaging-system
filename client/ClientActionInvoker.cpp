@@ -81,7 +81,8 @@ void ClientActionInvoker::performSendTextMessage(){
 
 	std::string messageText;
 	std::cout << "Enter message: ";
-	std::cin >> messageText;
+	std::ws(std::cin);
+	std::getline(std::cin, messageText);
 
 	ClientLogicHandler().performSendTextMessage(clientName, messageText);
 	std::cout << "Message sent" << std::endl;

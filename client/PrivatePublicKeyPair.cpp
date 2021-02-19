@@ -6,6 +6,7 @@
  */
 
 #include "PrivatePublicKeyPair.h"
+#include "EncryptionUtils.h"
 
 PrivatePublicKeyPair::~PrivatePublicKeyPair() {
 }
@@ -22,10 +23,10 @@ PrivatePublicKeyPair::PrivatePublicKeyPair(PrivateKey privateKey,
 }
 
 PrivatePublicKeyPair::PrivatePublicKeyPair(std::string str) {
-	std::string privateKeyStr = str.substr(0, str.find(":"));
-	std::string publicKeyStr = str.substr(str.find(":")+1, str.length());
-	this->privateKey = PrivateKey(privateKeyStr);
-	this->publicKey = PublicKey(publicKeyStr);
+	unsigned char privateKeyBuff[PRIVATE_KEY_SIZE];
+	Utils::base64Decode(str, privateKeyBuff, PRIVATE_KEY_SIZE);
+	this->privateKey = PrivateKey(privateKeyBuff);
+	this->publicKey = EncryptionUtils::generatePublicFromPrivate(ENCRYPTION_ALGORITHM_RSA, privateKey);
 }
 
 PrivatePublicKeyPair::PrivatePublicKeyPair(const PrivatePublicKeyPair &other) {
@@ -42,7 +43,9 @@ PublicKey PrivatePublicKeyPair::getPublicKey() const {
 }
 
 std::string PrivatePublicKeyPair::toString() {
-	return this->privateKey.toString() + ":" + this->publicKey.toString();
+	unsigned char privateKeyBuff[PRIVATE_KEY_SIZE];
+	this->privateKey.write(privateKeyBuff);
+	return Utils::base64Encode(privateKeyBuff, PRIVATE_KEY_SIZE);
 }
 
 PrivatePublicKeyPair& PrivatePublicKeyPair::operator =(

@@ -19,17 +19,35 @@ TestingManager::TestingManager() {
 }
 
 void TestingManager::performTests() {
+	unsigned char buff[10000];
+	std::memset(buff, 0, sizeof(buff));
+	unsigned char buff2[10000];
+	std::memset(buff2, 0, sizeof(buff2));
+	std::cout << "Testing base 64..." << std::endl;
+	buff[0] = 0;
+	buff[1] = 1;
+	buff[2] = 2;
+	buff[3] = 3;
+	std::string encoded = Utils::base64Encode(buff, 4);
+	int decodedSize = Utils::base64Decode(encoded, buff2, 1000);
+	if (decodedSize != 4)
+	{
+		throw std::runtime_error("Fail - decoded len incorrect");
+	}
+
+	if (buff[0]!=0 || buff[1]!=1 || buff[2]!=2 || buff[3]!=3){
+		throw std::runtime_error("Fail BASE64 - decoded text not equal to original");
+	}
+
 	std::cout << "Testing encryption..." << std::endl;
 	auto pair = EncryptionUtils::generateKeypair(ENCRYPTION_ALGORITHM_RSA);
-	char buff[16];
 	std::memset(buff, 0, sizeof(buff));
 	buff[0] = 0;
 	buff[1] = 1;
 	buff[2] = 2;
 	buff[3] = 3;
 
-	char buff2[1000];
-	std::memset(buff2, 0, sizeof(buff));
+	std::memset(buff2, 0, sizeof(buff2));
 
 	unsigned int cipherTextLen = EncryptionUtils::pkiEncrypt(ENCRYPTION_ALGORITHM_RSA, pair.getPublicKey(), buff, 16, buff2, 1000);
 	if (buff2[0]==0 && buff2[1]==1 && buff[2]==2 && buff[3]==3){
@@ -42,18 +60,30 @@ void TestingManager::performTests() {
 		throw std::runtime_error("Fail RSA - decoded text not equal to original");
 	}
 
-	SymmetricKey key = EncryptionUtils::generateSymmetricKey(ENCRYPTION_ALGORITHM_AES);
-	std::memset(buff2, 0, sizeof(buff));
+	std::memset(buff, 0, sizeof(buff));
+	for (int index=0; index<5000; index++){
+		buff[index] = index;
+	}
 
-	cipherTextLen = EncryptionUtils::symmetricEncrypt(ENCRYPTION_ALGORITHM_AES, key, buff, 16, buff2, 1000);
+	SymmetricKey key = EncryptionUtils::generateSymmetricKey(ENCRYPTION_ALGORITHM_AES);
+	std::memset(buff2, 0, sizeof(buff2));
+
+	cipherTextLen = EncryptionUtils::symmetricEncrypt(ENCRYPTION_ALGORITHM_AES, key, buff, 5000, buff2, 10000);
 	if (buff2[0]==0 && buff2[1]==1 && buff[2]==2 && buff[3]==3){
 		throw std::runtime_error("Fail AES - cipher Text equals plain text");
 	}
 
 	std::memset(buff, 0, sizeof(buff));
-	EncryptionUtils::symmetricDecrypt(ENCRYPTION_ALGORITHM_RSA, key, buff2, cipherTextLen, buff, 16);
-	if (buff[0]!=0 || buff[1]!=1 || buff[2]!=2 || buff[3]!=3){
-		throw std::runtime_error("Fail AES - decoded text not equal to original");
+	decodedSize = EncryptionUtils::symmetricDecrypt(ENCRYPTION_ALGORITHM_RSA, key, buff2, cipherTextLen, buff, 10000);
+	if (decodedSize != 5000)
+	{
+		throw std::runtime_error("Fail AES - Decoded size does not match");
+	}
+
+	for (int index=0; index<500; index++){
+		if (buff[index] != (unsigned char)index){
+			throw std::runtime_error("Fail AES - decoded text not equal to original. index=" + std::to_string(index) + ". value=" + std::to_string(buff[index]));
+		}
 	}
 
 	std::cout << "Running tests - make sure to have a clean server" << std::endl;
