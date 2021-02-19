@@ -7,6 +7,7 @@
 
 #include "ByteBuffer.h"
 #include "Constants.h"
+#include "Utils.h"
 
 ByteBuffer::ByteBuffer()
 {
@@ -48,4 +49,36 @@ unsigned char ByteBuffer::readByte()
 	}
 
 	return *buffer;
+}
+
+unsigned short ByteBuffer::readShort()
+{
+	if (this->getBytesLeft()<2){
+		throw std::runtime_error("EOS");
+	}
+
+	char buffer[2];
+	unsigned int amountRead = this->readData(buffer, 2);
+
+	if (amountRead!=2){
+		throw std::runtime_error("EOS");
+	}
+
+	return Utils::convertToNum(buffer, 2);
+}
+
+unsigned int ByteBuffer::readInt()
+{
+	if (this->getBytesLeft()<4){
+		throw std::runtime_error("EOS");
+	}
+
+	char buffer[4];
+	unsigned int amountRead = this->readData(buffer, 4);
+
+	if (amountRead!=4){
+		throw std::runtime_error("EOS");
+	}
+
+	return Utils::convertToNum(buffer, 4);
 }

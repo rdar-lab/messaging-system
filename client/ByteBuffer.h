@@ -35,7 +35,9 @@ public:
 	virtual unsigned short readData(void *destinationBuffer,
 			unsigned short lenToRead) = 0;
 
-	unsigned char readByte();
+	unsigned char  readByte();
+	unsigned short readShort();
+	unsigned int   readInt();
 
 	/*
 	 * Sends all the data to a given output stream

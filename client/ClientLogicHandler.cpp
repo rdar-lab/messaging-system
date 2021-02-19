@@ -245,7 +245,7 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 	}
 }
 
-void ClientLogicHandler::sendMessage(ClientDef destinationClient, unsigned char messageType, void *messageContent, unsigned int messageLen){
+unsigned int ClientLogicHandler::sendMessage(ClientDef destinationClient, unsigned char messageType, void *messageContent, unsigned int messageLen){
 	unsigned int payloadLen = messageLen + CLIENT_ID_SIZE + MESSAGE_ID_SIZE + 1;
 	unsigned char payload[payloadLen];
 	std::memset(payload, 0, sizeof(payload));
@@ -265,6 +265,7 @@ void ClientLogicHandler::sendMessage(ClientDef destinationClient, unsigned char 
 	{
 		throw std::runtime_error("Message sending ERR. invalid response code: " + std::to_string(resp->getResponseCode()));
 	}
+	return resp->getPayload()->readInt();
 
 }
 

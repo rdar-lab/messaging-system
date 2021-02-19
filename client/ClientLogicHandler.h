@@ -26,7 +26,7 @@ public:
 	void performSendRequestForSymmetricKey(std::string clientName);
 	void performSendSymmetricKey(std::string clientName);
 private:
-	void sendMessage(ClientDef destinationClient, unsigned char messageType, void *messageContent, unsigned int messageLen);
+	unsigned int sendMessage(ClientDef destinationClient, unsigned char messageType, void *messageContent, unsigned int messageLen);
 	Response *resp;
 };
 
