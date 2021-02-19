@@ -8,6 +8,8 @@
 #ifndef ENCRYPTIONUTILS_H_
 #define ENCRYPTIONUTILS_H_
 
+#define ENC_DEBUG
+
 #include "PrivatePublicKeyPair.h"
 #include "SymmetricKey.h"
 
@@ -21,7 +23,8 @@ public:
 			PublicKey publicKey,
 			void *source,
 			unsigned int sourceLen,
-			void *destination
+			void *destination,
+			unsigned int destLen
 	);
 
 	static unsigned int pkiDecrypt(
@@ -29,17 +32,27 @@ public:
 			PrivateKey privateKey,
 			void *source,
 			unsigned int sourceLen,
-			void *destination
+			void *destination,
+			unsigned int destLen
 	);
 
-	static unsigned int encryptDecrypt(
+	static unsigned int symmetricEncrypt(
 			unsigned short algorithm,
 			SymmetricKey key,
 			void *source,
 			unsigned int sourceLen,
-			void *destination
+			void *destination,
+			unsigned int destLen
 	);
 
+	static unsigned int symmetricDecrypt(
+			unsigned short algorithm,
+			SymmetricKey key,
+			void *source,
+			unsigned int sourceLen,
+			void *destination,
+			unsigned int destLen
+	);
 
 private:
 	EncryptionUtils();

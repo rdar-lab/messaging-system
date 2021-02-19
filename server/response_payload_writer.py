@@ -27,7 +27,7 @@ class ResponsePayloadWriter:
                 client_id = client.get_client_id()
                 self.__helper.write_bytes(client_id)
                 client_name = client.get_client_name()
-                self.__helper.write_str(client_name, 255)
+                self.__helper.write_str(client_name, STR_SIZE)
         if RESPONSE_PAYLOAD_PUBLIC_KEY in payload:
             self.__helper.write_bytes(payload[RESPONSE_PAYLOAD_PUBLIC_KEY])
         if RESPONSE_PAYLOAD_MESSAGE_ID in payload:
@@ -52,19 +52,20 @@ class ResponsePayloadWriter:
     def __calc_payload_size(payload):
         size = 0
         if RESPONSE_PAYLOAD_CLIENT_ID in payload:
-            size = size + 16
+            size = size + CLIENT_ID_SIZE
 
         if RESPONSE_PAYLOAD_CLIENTS in payload:
-            size = size + len(payload[RESPONSE_PAYLOAD_CLIENTS].values()) * (16 + 255)
+            size = size + len(payload[RESPONSE_PAYLOAD_CLIENTS].values()) * (CLIENT_ID_SIZE + STR_SIZE)
 
         if RESPONSE_PAYLOAD_PUBLIC_KEY in payload:
-            size = size + 32
+            size = size + PUBLIC_KEY_SIZE
 
         if RESPONSE_PAYLOAD_MESSAGE_ID in payload:
-            size = size + 4
+            size = size + MESSAGE_ID_SIZE
 
         if RESPONSE_PAYLOAD_MESSAGES in payload:
             for message in payload[RESPONSE_PAYLOAD_MESSAGES]:
-                size = size + 16 + 4 + 1 + 4 + len(message.get_message_content())
+                size = size + CLIENT_ID_SIZE + MESSAGE_ID_SIZE + MESSAGE_TYPE_SIZE + MESSAGE_LENGTH_SIZE + len(
+                    message.get_message_content())
 
         return size

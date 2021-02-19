@@ -12,12 +12,50 @@
 #include "InMemClientDatastore.h"
 #include "ClientLogicHandler.h"
 #include "CommunicationManager.h"
+#include "EncryptionUtils.h"
 
 TestingManager::TestingManager() {
 
 }
 
 void TestingManager::performTests() {
+	std::cout << "Testing encryption..." << std::endl;
+	auto pair = EncryptionUtils::generateKeypair(ENCRYPTION_ALGORITHM_RSA);
+	char buff[16];
+	std::memset(buff, 0, sizeof(buff));
+	buff[0] = 0;
+	buff[1] = 1;
+	buff[2] = 2;
+	buff[3] = 3;
+
+	char buff2[1000];
+	std::memset(buff2, 0, sizeof(buff));
+
+	unsigned int cipherTextLen = EncryptionUtils::pkiEncrypt(ENCRYPTION_ALGORITHM_RSA, pair.getPublicKey(), buff, 16, buff2, 1000);
+	if (buff2[0]==0 && buff2[1]==1 && buff[2]==2 && buff[3]==3){
+		throw std::runtime_error("Fail RSA - cipher Text equals plain text");
+	}
+
+	std::memset(buff, 0, sizeof(buff));
+	EncryptionUtils::pkiDecrypt(ENCRYPTION_ALGORITHM_RSA, pair.getPrivateKey(), buff2, cipherTextLen, buff, 16);
+	if (buff[0]!=0 || buff[1]!=1 || buff[2]!=2 || buff[3]!=3){
+		throw std::runtime_error("Fail RSA - decoded text not equal to original");
+	}
+
+	SymmetricKey key = EncryptionUtils::generateSymmetricKey(ENCRYPTION_ALGORITHM_AES);
+	std::memset(buff2, 0, sizeof(buff));
+
+	cipherTextLen = EncryptionUtils::symmetricEncrypt(ENCRYPTION_ALGORITHM_AES, key, buff, 16, buff2, 1000);
+	if (buff2[0]==0 && buff2[1]==1 && buff[2]==2 && buff[3]==3){
+		throw std::runtime_error("Fail AES - cipher Text equals plain text");
+	}
+
+	std::memset(buff, 0, sizeof(buff));
+	EncryptionUtils::symmetricDecrypt(ENCRYPTION_ALGORITHM_RSA, key, buff2, cipherTextLen, buff, 16);
+	if (buff[0]!=0 || buff[1]!=1 || buff[2]!=2 || buff[3]!=3){
+		throw std::runtime_error("Fail AES - decoded text not equal to original");
+	}
+
 	std::cout << "Running tests - make sure to have a clean server" << std::endl;
 
 	CommunicationManager::getInstance()->setParams("127.0.0.1", 1234);
@@ -167,7 +205,7 @@ void TestingManager::performTests() {
 		std::cout << "Pass" << std::endl;
 	}
 	{
-		std::cout << "Test 11 - read symmetric key" << std::endl;
+		std::cout << "Test 12 - read symmetric key" << std::endl;
 		ClientMetadataManager::singleInstance = &client2;
 		ClientDatastore::setInstance(&dataStoreClient2);
 
@@ -192,13 +230,13 @@ void TestingManager::performTests() {
 		std::cout << "Pass" << std::endl;
 	}
 	{
-		std::cout << "Test 12 - Send messages" << std::endl;
+		std::cout << "Test 13 - Send messages" << std::endl;
 		ClientLogicHandler().performSendTextMessage("client1", "message 1 from client2");
 		ClientLogicHandler().performSendTextMessage("client1", "message 2 from client2");
 		std::cout << "Pass" << std::endl;
 	}
 	{
-		std::cout << "Test 13 - Get messages" << std::endl;
+		std::cout << "Test 14 - Get messages" << std::endl;
 		ClientMetadataManager::singleInstance = &client1;
 		ClientDatastore::setInstance(&dataStoreClient1);
 
@@ -230,12 +268,12 @@ void TestingManager::performTests() {
 
 		if (msg1.getMessageContentTxt() != "message 1 from client2")
 		{
-			throw std::runtime_error("Fail - Unexpected message text");
+			throw std::runtime_error("Fail - MSG1 - Unexpected message text: --" + msg1.getMessageContentTxt() + "--");
 		}
 
 		if (msg2.getMessageContentTxt() != "message 2 from client2")
 		{
-			throw std::runtime_error("Fail - Unexpected message text");
+			throw std::runtime_error("Fail - MSG2 - Unexpected message text: --" + msg2.getMessageContentTxt() + "--");
 		}
 
 		messages = ClientLogicHandler().performGetMessages();

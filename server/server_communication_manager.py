@@ -25,10 +25,14 @@ class ServerCommunicationManager:
         sock.bind(("0.0.0.0", self.__port))
         sock.listen(CONNECTIONS_BACKLOG)
 
-        while True:
-            client_sock, addr = sock.accept()
-            client_thread = threading.Thread(target=self.__handle_data, args=(client_sock, addr))
-            client_thread.start()
+        try:
+
+            while True:
+                client_sock, addr = sock.accept()
+                client_thread = threading.Thread(target=self.__handle_data, args=(client_sock, addr))
+                client_thread.start()
+        finally:
+            sock.close()
 
     def __handle_data(self, sock, addr):
         try:

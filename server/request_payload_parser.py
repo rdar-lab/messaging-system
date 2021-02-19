@@ -32,11 +32,11 @@ class RequestPayloadParser:
             raise Exception("Got unknown request code. got={}".format(self.__request_code))
 
     def __parse_register_request_params(self):
-        if not self.__payload_size == 255 + 32:
+        if not self.__payload_size == STR_SIZE + PUBLIC_KEY_SIZE:
             raise Exception("Incorrect payload size. got={}".format(self.__payload_size))
 
-        client_name = self.__helper.read_str(255)
-        client_pk = self.__helper.read_bytes(32)
+        client_name = self.__helper.read_str(STR_SIZE)
+        client_pk = self.__helper.read_bytes(PUBLIC_KEY_SIZE)
 
         return {
             REQUEST_PAYLOAD_CLIENT_NAME: client_name,
@@ -50,26 +50,26 @@ class RequestPayloadParser:
         return {}
 
     def __parse_get_client_public_key_req_params(self):
-        if not self.__payload_size == 16:
+        if not self.__payload_size == CLIENT_ID_SIZE:
             raise Exception("Incorrect payload size. got={}".format(self.__payload_size))
 
-        client_id = self.__helper.read_bytes(16)
+        client_id = self.__helper.read_bytes(CLIENT_ID_SIZE)
         return {
             REQUEST_PAYLOAD_CLIENT_ID: client_id
         }
 
     def __parse_send_message_req_params(self):
-        if self.__payload_size < 16 + 1 + 4:
+        if self.__payload_size < CLIENT_ID_SIZE + MESSAGE_LENGTH_SIZE + MESSAGE_TYPE_SIZE:
             raise Exception("Incorrect payload size. got={}".format(self.__payload_size))
 
-        client_id = self.__helper.read_bytes(16)
+        client_id = self.__helper.read_bytes(CLIENT_ID_SIZE)
         message_type = self.__helper.read_byte()
         message_size = self.__helper.read_int()
 
         if message_size > MAX_MSG_BODY_BYTES:
             raise Exception("Max message body size reached. got={}".format(message_size))
 
-        if not self.__payload_size == message_size + 16 + 1 + 4:
+        if not self.__payload_size == message_size + CLIENT_ID_SIZE + MESSAGE_LENGTH_SIZE + MESSAGE_TYPE_SIZE:
             raise Exception("Incorrect payload size. does not match message size. got={}".format(message_size))
 
         if message_type == MESSAGE_TYPE_ENC_KEY_REQUEST:

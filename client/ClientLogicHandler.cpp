@@ -140,7 +140,7 @@ void ClientLogicHandler::performGetClientPublicKey(std::string clientName){
 std::list<Message> ClientLogicHandler::performGetMessages(){
 	ClientId clientId = ClientMetadataManager::getInstance()->getClientId();
 	Request req(clientId, CLIENT_VERSION, REQUEST_CODE_GET_MESSAGES, NULL);
-	Response* resp = CommunicationManager::getInstance()->sendRequest(&req);
+	resp = CommunicationManager::getInstance()->sendRequest(&req);
 	if (resp->getResponseCode() == RESPONSE_CODE_LIST_OF_MESSAGES)
 	{
 		std::list<Message> result;
@@ -188,22 +188,19 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 					break;
 				case MESSAGE_TYPE_ENC_KEY_RESP:
 					{
-						if (messageLen != SYMMETRIC_KEY_SIZE)
-						{
-							throw std::runtime_error("Message len incorrect. expected SYMMETRIC_KEY_SIZE");
-						}
-
 						if (messageFromClient.getSymmetricKey().isEmpty())
 						{
-							unsigned char encryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
+							unsigned char encryptedKeyBuffer[BUFFER_SIZE];
 							unsigned char decryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
-							resp->getPayload()->readData(encryptedKeyBuffer, SYMMETRIC_KEY_SIZE);
+							resp->getPayload()->readData(encryptedKeyBuffer, messageLen);
 							EncryptionUtils::pkiDecrypt(
 									ENCRYPTION_ALGORITHM_RSA,
 									ClientMetadataManager::getInstance()->getPrivatePublicKeyPair().getPrivateKey(),
 									encryptedKeyBuffer,
-									MESSAGE_LENGTH_SIZE,
-									decryptedKeyBuffer);
+									messageLen,
+									decryptedKeyBuffer,
+									SYMMETRIC_KEY_SIZE
+							);
 
 							SymmetricKey key(decryptedKeyBuffer);
 							messageFromClient.setSymmetricKey(key);
@@ -221,7 +218,19 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 					{
 						char messageBuffer[messageLen];
 						resp->getPayload()->readData(messageBuffer, messageLen);
-						std::string msgText(messageBuffer);
+
+						unsigned char decryptedMessageBuffer[messageLen+EXTRA_MESSAGE_BUFFER];
+						std::memset(decryptedMessageBuffer, 0, sizeof(decryptedMessageBuffer));
+						EncryptionUtils::symmetricDecrypt(
+								ENCRYPTION_ALGORITHM_AES,
+								messageFromClient.getSymmetricKey(),
+								(void*)messageBuffer,
+								messageLen,
+								(void*)decryptedMessageBuffer,
+								messageLen+EXTRA_MESSAGE_BUFFER
+						);
+
+						std::string msgText((char*)decryptedMessageBuffer);
 						messageContentTxt = msgText;
 					}
 					break;
@@ -281,12 +290,14 @@ void ClientLogicHandler::performSendTextMessage(std::string clientName, std::str
 
 	unsigned char encryptedMessageBuffer[messageText.length()+EXTRA_MESSAGE_BUFFER];
 	std::memset(encryptedMessageBuffer, 0, sizeof(encryptedMessageBuffer));
-	unsigned int encryptedTextLen = EncryptionUtils::encryptDecrypt(
+	unsigned int encryptedTextLen = EncryptionUtils::symmetricEncrypt(
 			ENCRYPTION_ALGORITHM_AES,
 			client.getSymmetricKey(),
 			(void*)messageText.c_str(),
 			messageText.length()+1,
-			encryptedMessageBuffer);
+			encryptedMessageBuffer,
+			messageText.length()+EXTRA_MESSAGE_BUFFER
+	);
 
 	sendMessage(client, MESSAGE_TYPE_TEXT_MESSAGE, encryptedMessageBuffer, encryptedTextLen);
 }
@@ -329,13 +340,15 @@ void ClientLogicHandler::performSendSymmetricKey(std::string clientName){
 
 	unsigned char decryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
 	client.getSymmetricKey().write(decryptedKeyBuffer);
-	unsigned char encryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
+	unsigned char encryptedKeyBuffer[BUFFER_SIZE];
 	unsigned int encrypterdMsgLen = EncryptionUtils::pkiEncrypt(
 			ENCRYPTION_ALGORITHM_RSA,
 			client.getPublicKey(),
 			decryptedKeyBuffer,
 			SYMMETRIC_KEY_SIZE,
-			encryptedKeyBuffer);
+			encryptedKeyBuffer,
+			BUFFER_SIZE
+			);
 
 	sendMessage(client, MESSAGE_TYPE_ENC_KEY_RESP, encryptedKeyBuffer, encrypterdMsgLen);
 }
