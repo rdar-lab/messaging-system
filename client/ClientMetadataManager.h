@@ -23,11 +23,13 @@ public:
 	virtual ~ClientMetadataManager();
 private:
 	ClientMetadataManager();
+	void readData();
 	std::string clientName;
 	ClientId clientId;
 	bool isRegistred;
 	PrivatePublicKeyPair privatePublicKeyPair;
 	static ClientMetadataManager *singleInstance;
+	friend class TestingManager;
 };
 
 #endif /* CLIENTMETADATAMANAGER_H_ */

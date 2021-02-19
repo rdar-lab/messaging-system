@@ -15,10 +15,17 @@
 #include "ClientDatastore.h"
 #include "InMemClientDatastore.h"
 #include "ClientActionInvoker.h"
+#include "TestingManager.h"
 
 using namespace std;
 
-int main() {
+int main(int argv, char* argc[]) {
+	if (argv>1 && std::string(argc[1])=="test")
+	{
+		TestingManager::performTests();
+		return 0;
+	}
+
 	try
 		{
 			ConfigurationFileReader serverConfigReader(SERVER_CONFIGURATION_FILE_LOCATION);

@@ -76,7 +76,7 @@ class RequestPayloadParser:
             if not message_size == 0:
                 raise Exception("Incorrect message size. should be 0. instead got {}".format(message_size))
             else:
-                message_body = ""
+                message_body = bytes()
         elif message_type == MESSAGE_TYPE_ENC_KEY_RESP or message_type == MESSAGE_TYPE_TEXT_MESSAGE:
             message_body = self.__helper.read_bytes(message_size)
         elif message_type == MESSAGE_TYPE_FILE_MESSAGE:

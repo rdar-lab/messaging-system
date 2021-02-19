@@ -11,6 +11,13 @@
 #include <fstream>
 
 ClientMetadataManager::ClientMetadataManager() {
+	isRegistred = false;
+	this->clientName = "";
+	this->clientId = ClientId();
+	this->privatePublicKeyPair = PrivatePublicKeyPair();
+}
+
+void ClientMetadataManager::readData() {
 	this->isRegistred = false;
 
 	std::ifstream clientMetadataFile(CLIENT_CONFIGURATION_FILE_LOCATION);
@@ -44,7 +51,6 @@ ClientMetadataManager::ClientMetadataManager() {
 		this->clientId = ClientId();
 		this->privatePublicKeyPair = PrivatePublicKeyPair();
 	}
-
 }
 
 ClientMetadataManager::~ClientMetadataManager() {
@@ -58,7 +64,9 @@ ClientMetadataManager* ClientMetadataManager::getInstance()
 	// Check if the instance is initialized, and if not create it
 	if (ClientMetadataManager::singleInstance == NULL)
 	{
-		ClientMetadataManager::singleInstance = new ClientMetadataManager();
+		ClientMetadataManager* instance = new ClientMetadataManager();
+		instance->readData();
+		ClientMetadataManager::singleInstance = instance;
 	}
 	return ClientMetadataManager::singleInstance;
 }

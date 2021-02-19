@@ -10,6 +10,7 @@
 
 #include "ClientMetadataManager.h"
 #include "ClientDef.h"
+#include <string>
 
 class ClientActionInvoker {
 public:
@@ -17,8 +18,7 @@ public:
 	int performAction(int selectedOption);
 	virtual ~ClientActionInvoker();
 private:
-	ClientDef promptAndGetClient();
-	void sendMessage(ClientDef destinationClient, unsigned char messageType, void *messageContent, unsigned int messageLen);
+	std::string promptAndGetClient();
 	void performRegister();
 	void performGetClientsList();
 	void performGetClientPublicKey();
