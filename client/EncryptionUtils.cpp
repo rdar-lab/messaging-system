@@ -25,6 +25,10 @@ EncryptionUtils::~EncryptionUtils() {
 }
 
 PrivatePublicKeyPair EncryptionUtils::generateKeypair(unsigned int algorithm) {
+	#ifdef ENC_DEBUG
+		std::cout << "Generating Key pain..." << std::endl;
+	#endif
+
 	CryptoPP::AutoSeededRandomPool rng;
 	CryptoPP::InvertibleRSAFunction params;
 	params.GenerateRandomWithKeySize(rng, RSA_KEY_BITS);
@@ -55,6 +59,11 @@ PublicKey EncryptionUtils::generatePublicFromPrivate(unsigned int algorithm,
 	std::memset(privateKeyBytes, 0, sizeof(privateKeyBytes));
 	privateKey.write(privateKeyBytes);
 
+	#ifdef ENC_DEBUG
+		std::cout << "Generating public key from private key..." << std::endl;
+		std::cout << "PrivateKey:" << Utils::writeBytestoStr(privateKeyBytes, PRIVATE_KEY_SIZE) << std::endl;
+	#endif
+
 	CryptoPP::RSA::PrivateKey cpPrivateKey;
 	CryptoPP::ArraySource privateSource((const unsigned char*)privateKeyBytes, PRIVATE_KEY_SIZE, true);
 	cpPrivateKey.Load(privateSource);
@@ -67,7 +76,6 @@ PublicKey EncryptionUtils::generatePublicFromPrivate(unsigned int algorithm,
 	publicKey.Save(publicSink);
 
 	#ifdef ENC_DEBUG
-		std::cout << "PrivateKey:" << Utils::writeBytestoStr(privateKeyBytes, PRIVATE_KEY_SIZE) << std::endl;
 		std::cout << "PublicKey:"  << Utils::writeBytestoStr(publicKeyBytes, PUBLIC_KEY_SIZE) << std::endl;
 	#endif
 
@@ -77,6 +85,10 @@ PublicKey EncryptionUtils::generatePublicFromPrivate(unsigned int algorithm,
 
 
 SymmetricKey EncryptionUtils::generateSymmetricKey(unsigned int algorithm) {
+	#ifdef ENC_DEBUG
+		std::cout << "Generating symmetric key..." << std::endl;
+	#endif
+
 	CryptoPP::AutoSeededRandomPool prng;
 	unsigned char key[SYMMETRIC_KEY_SIZE];
 	std::memset(key, 0, sizeof(key));
@@ -98,6 +110,8 @@ unsigned int EncryptionUtils::pkiEncrypt(unsigned short algorithm,
 	publicKey.write(publicKeyBytes);
 
 	#ifdef ENC_DEBUG
+		std::cout << "Performing PKI encrypt..." << std::endl;
+		std::cout << "PlainText:" << Utils::writeBytestoStr((char*)source, sourceLen) << std::endl;
 		std::cout << "PublicKey:" << Utils::writeBytestoStr(publicKeyBytes, PUBLIC_KEY_SIZE) << std::endl;
 	#endif
 
@@ -118,7 +132,6 @@ unsigned int EncryptionUtils::pkiEncrypt(unsigned short algorithm,
 	unsigned int finalLen = destSink->TotalPutLength();
 
 	#ifdef ENC_DEBUG
-		std::cout << "PlainText:" << Utils::writeBytestoStr((char*)source, sourceLen) << std::endl;
 		std::cout << "CipherText:" << Utils::writeBytestoStr((char*)destination, finalLen) << std::endl;
 	#endif
 
@@ -132,6 +145,8 @@ unsigned int EncryptionUtils::pkiDecrypt(int algorithm, PrivateKey privateKey,
 	privateKey.write(privateKeyBytes);
 
 	#ifdef ENC_DEBUG
+		std::cout << "Performing PKI decrypt..." << std::endl;
+		std::cout << "CipherText:" << Utils::writeBytestoStr((char*)source, sourceLen) << std::endl;
 		std::cout << "PrivateKey:"  << Utils::writeBytestoStr(privateKeyBytes, PRIVATE_KEY_SIZE) << std::endl;
 	#endif
 
@@ -152,7 +167,6 @@ unsigned int EncryptionUtils::pkiDecrypt(int algorithm, PrivateKey privateKey,
 	unsigned int finalLen = destSink->TotalPutLength();
 
 	#ifdef ENC_DEBUG
-		std::cout << "CipherText:" << Utils::writeBytestoStr((char*)source, sourceLen) << std::endl;
 		std::cout << "PlainText:" << Utils::writeBytestoStr((char*)destination, finalLen) << std::endl;
 	#endif
 
@@ -167,6 +181,8 @@ unsigned int EncryptionUtils::symmetricEncrypt(unsigned short algorithm,
 	key.write(keyBuffer);
 
 	#ifdef ENC_DEBUG
+		std::cout << "Performing symmetric encrypt..." << std::endl;
+		std::cout << "PlainText:" << Utils::writeBytestoStr((char*)source, sourceLen) << std::endl;
 		std::cout << "SymmetricKey:" << Utils::writeBytestoStr(keyBuffer, SYMMETRIC_KEY_SIZE) << std::endl;
 	#endif
 
@@ -183,7 +199,6 @@ unsigned int EncryptionUtils::symmetricEncrypt(unsigned short algorithm,
 	unsigned int finalLen = filter.Get((unsigned char*)destination,destLen);
 
 	#ifdef ENC_DEBUG
-		std::cout << "PlainText:" << Utils::writeBytestoStr((char*)source, sourceLen) << std::endl;
 		std::cout << "CipherText:" << Utils::writeBytestoStr((char*)destination, finalLen) << std::endl;
 	#endif
 
@@ -198,6 +213,8 @@ unsigned int EncryptionUtils::symmetricDecrypt(unsigned short algorithm,
 	key.write(keyBuffer);
 
 	#ifdef ENC_DEBUG
+		std::cout << "Performing symmetric decrypt..." << std::endl;
+		std::cout << "CipherText:" << Utils::writeBytestoStr((char*)source, sourceLen) << std::endl;
 		std::cout << "SymmetricKey:" << Utils::writeBytestoStr(keyBuffer, SYMMETRIC_KEY_SIZE) << std::endl;
 	#endif
 
@@ -214,7 +231,6 @@ unsigned int EncryptionUtils::symmetricDecrypt(unsigned short algorithm,
 	unsigned int finalLen = filter.Get((unsigned char*)destination,destLen);
 
 	#ifdef ENC_DEBUG
-		std::cout << "CipherText:" << Utils::writeBytestoStr((char*)source, sourceLen) << std::endl;
 		std::cout << "PlainText:" << Utils::writeBytestoStr((char*)destination, finalLen) << std::endl;
 	#endif
 

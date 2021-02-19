@@ -263,6 +263,15 @@ void TestingManager::performTests() {
 		std::cout << "Test 13 - Send messages" << std::endl;
 		ClientLogicHandler().performSendTextMessage("client1", "message 1 from client2");
 		ClientLogicHandler().performSendTextMessage("client1", "message 2 from client2");
+
+		char longMessage[5001];
+		for (int index=0; index<5000; index++){
+			longMessage[index] = '0' + (index%10);
+		}
+		longMessage[5000] = 0;
+
+		ClientLogicHandler().performSendTextMessage("client1", std::string(longMessage));
+
 		std::cout << "Pass" << std::endl;
 	}
 	{
@@ -271,7 +280,7 @@ void TestingManager::performTests() {
 		ClientDatastore::setInstance(&dataStoreClient1);
 
 		auto messages = ClientLogicHandler().performGetMessages();
-		if (messages.size() != 2){
+		if (messages.size() != 3){
 			throw std::runtime_error("Fail - expected exactly one message");
 		}
 
@@ -279,6 +288,8 @@ void TestingManager::performTests() {
 		Message msg1 = *it;
 		it++;
 		Message msg2 = *it;
+		it++;
+		Message msg3 = *it;
 
 		if (msg1.getFromClient().getName()!="client2"){
 			throw std::runtime_error("Fail - expected message from client2");
@@ -296,6 +307,14 @@ void TestingManager::performTests() {
 			throw std::runtime_error("Fail - expected message from client2 ID");
 		}
 
+		if (msg3.getFromClient().getName()!="client2"){
+			throw std::runtime_error("Fail - expected message from client2");
+		}
+
+		if (msg3.getFromClient().getId()!=client2.getClientId()){
+			throw std::runtime_error("Fail - expected message from client2 ID");
+		}
+
 		if (msg1.getMessageContentTxt() != "message 1 from client2")
 		{
 			throw std::runtime_error("Fail - MSG1 - Unexpected message text: --" + msg1.getMessageContentTxt() + "--");
@@ -304,6 +323,22 @@ void TestingManager::performTests() {
 		if (msg2.getMessageContentTxt() != "message 2 from client2")
 		{
 			throw std::runtime_error("Fail - MSG2 - Unexpected message text: --" + msg2.getMessageContentTxt() + "--");
+		}
+
+		std::string longMsg = msg3.getMessageContentTxt();
+		if (longMsg.length() != 5000)
+		{
+			throw std::runtime_error("Fail - MSG3 - got unexpected length: " + std::to_string(longMsg.length()));
+		}
+
+		const char* data = longMsg.data();
+		for (int index=0; index<5000; index++){
+			if (data[index]!= ('0' + (index%10))){
+				throw std::runtime_error("Fail - MSG3 - got unexpected token on index: " +
+						std::to_string(index) + ", value=" + std::to_string(data[index]) +
+						", expected=" + std::to_string('A' + (index%10))
+				);
+			}
 		}
 
 		messages = ClientLogicHandler().performGetMessages();

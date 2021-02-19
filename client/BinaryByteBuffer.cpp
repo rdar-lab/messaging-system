@@ -27,7 +27,7 @@ unsigned short int BinaryByteBuffer::readData(void *destinationBuffer,
 		amountToRead = lenToReadInput;
 	}
 
-	std::copy((char*)this->data, (char*)this->data + (amountToRead), (char*)destinationBuffer);
+	std::copy((char*)this->data + this->offset, (char*)this->data + this->offset + amountToRead, (char*)destinationBuffer);
 
 	this->offset = this->offset + amountToRead;
 	return amountToRead;
