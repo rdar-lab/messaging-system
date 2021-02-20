@@ -81,7 +81,7 @@ class InMemStorageManager(StorageManager):
 
         return copy.deepcopy(messages)
 
-    def remove_messages(self, messages_to_remove=None):
+    def remove_messages(self, messages_to_remove):
         _logger.info("Removing messages: {}".format(messages_to_remove))
 
         for message in messages_to_remove:

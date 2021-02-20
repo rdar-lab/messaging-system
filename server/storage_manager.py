@@ -33,5 +33,5 @@ class StorageManager(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def remove_messages(self, messages_to_remove=None):
+    def remove_messages(self, messages_to_remove):
         raise NotImplementedError()
