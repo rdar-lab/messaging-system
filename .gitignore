@@ -1,4 +1,5 @@
 /server/venv/
 /server/.idea
+/server/*.db
 .metadata
 server/__pycache__/

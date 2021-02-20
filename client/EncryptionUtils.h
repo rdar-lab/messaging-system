@@ -56,6 +56,20 @@ public:
 			unsigned int destLen
 	);
 
+	static void symmetricEncryptFile(
+			unsigned short algorithm,
+			SymmetricKey key,
+			std::string sourceFileName,
+			std::string destFileName
+	);
+
+	static void symmetricDecryptFile(
+			unsigned short algorithm,
+			SymmetricKey key,
+			std::string sourceFileName,
+			std::string destFileName
+	);
+
 private:
 	EncryptionUtils();
 	virtual ~EncryptionUtils();

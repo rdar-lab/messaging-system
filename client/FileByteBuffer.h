@@ -34,7 +34,7 @@ public:
 	/*
 	 * Reads the data based on chunks
 	 */
-	virtual unsigned short int readData(char *destinationBuffer,
+	virtual unsigned short int readData(void *destinationBuffer,
 			unsigned short int lenToRead);
 
 	/*

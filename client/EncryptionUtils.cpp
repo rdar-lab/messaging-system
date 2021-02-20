@@ -8,6 +8,8 @@
 #include "EncryptionUtils.h"
 #include <cstring>
 #include <string>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
 
 #include "rsa.h"
 #include "filters.h"
@@ -16,6 +18,9 @@
 #include "aes.h"
 #include "ccm.h"
 #include "filters.h"
+#include "files.h"
+
+
 
 EncryptionUtils::EncryptionUtils() {
 
@@ -235,4 +240,93 @@ unsigned int EncryptionUtils::symmetricDecrypt(unsigned short algorithm,
 	#endif
 
 	return finalLen;
+}
+
+void EncryptionUtils::symmetricEncryptFile(unsigned short algorithm,
+		SymmetricKey key, std::string sourceFileName,
+		std::string destFileName) {
+	CryptoPP::CBC_Mode< CryptoPP::AES >::Encryption e;
+	unsigned char keyBuffer[SYMMETRIC_KEY_SIZE];
+	key.write(keyBuffer);
+
+	#ifdef ENC_DEBUG
+		std::cout << "Performing symmetric encrypt file..." << std::endl;
+		std::cout << "File len before: " << boost::filesystem::file_size(sourceFileName) << std::endl;
+	#endif
+
+	unsigned char iv[CryptoPP::AES::BLOCKSIZE];
+	std::memset(iv, 0, sizeof(iv));
+
+	e.SetKeyWithIV(keyBuffer, sizeof(keyBuffer), iv);
+
+	std::ifstream in{sourceFileName, std::ios::binary};
+	if (not in.good()){
+		throw std::runtime_error("File not found");
+	}
+
+	std::ofstream out{destFileName, std::ios::binary};
+	try{
+		CryptoPP::FileSource{in, /*pumpAll=*/true,
+						   new CryptoPP::StreamTransformationFilter{
+							   e, new CryptoPP::FileSink{out}}};
+		in.close();
+		out.close();
+	} catch (...){
+		try{
+			in.close();
+			out.close();
+		} catch (...){
+
+		}
+		throw;
+	}
+
+	#ifdef ENC_DEBUG
+		std::cout << "File len after: " << boost::filesystem::file_size(destFileName) << std::endl;
+	#endif
+
+}
+
+void EncryptionUtils::symmetricDecryptFile(unsigned short algorithm,
+		SymmetricKey key, std::string sourceFileName,
+		std::string destFileName) {
+	CryptoPP::CBC_Mode< CryptoPP::AES >::Decryption d;
+	unsigned char keyBuffer[SYMMETRIC_KEY_SIZE];
+	key.write(keyBuffer);
+
+	#ifdef ENC_DEBUG
+		std::cout << "Performing symmetric decrypt file..." << std::endl;
+		std::cout << "File len before: " << boost::filesystem::file_size(sourceFileName) << std::endl;
+	#endif
+
+	unsigned char iv[CryptoPP::AES::BLOCKSIZE];
+	std::memset(iv, 0, sizeof(iv));
+
+	d.SetKeyWithIV(keyBuffer, sizeof(keyBuffer), iv);
+
+	std::ifstream in{sourceFileName, std::ios::binary};
+	if (not in.good()){
+		throw std::runtime_error("File not found");
+	}
+
+	std::ofstream out{destFileName, std::ios::binary};
+	try{
+		CryptoPP::FileSource{in, /*pumpAll=*/true,
+						   new CryptoPP::StreamTransformationFilter{
+							   d, new CryptoPP::FileSink{out}}};
+		in.close();
+		out.close();
+	} catch (...){
+		try{
+			in.close();
+			out.close();
+		} catch (...){
+
+		}
+		throw;
+	}
+
+	#ifdef ENC_DEBUG
+		std::cout << "File len after: " << boost::filesystem::file_size(destFileName) << std::endl;
+	#endif
 }

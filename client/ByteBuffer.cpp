@@ -19,10 +19,19 @@ ByteBuffer::~ByteBuffer()
 
 void ByteBuffer::sendToStream(std::ostream &os)
 {
+	this->sendToStream(os, this->getBytesLeft());
+}
+
+void ByteBuffer::sendToStream(std::ostream &os, unsigned int amountToTransfer)
+{
 	char buffer[BUFFER_SIZE];
-	while (this->getBytesLeft() > 0)
+	while (amountToTransfer > 0)
 	{
-		short amount = this->readData(buffer, BUFFER_SIZE);
+		unsigned int amount = BUFFER_SIZE;
+		if (amount > amountToTransfer){
+			amount = amountToTransfer;
+		}
+		amount = this->readData(buffer, amount);
 		if (amount <= 0)
 		{
 			throw std::runtime_error(
@@ -31,6 +40,7 @@ void ByteBuffer::sendToStream(std::ostream &os)
 		else
 		{
 			os.write(buffer, amount);
+			amountToTransfer = amountToTransfer - amount;
 		}
 	}
 }

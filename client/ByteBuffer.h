@@ -43,6 +43,7 @@ public:
 	 * Sends all the data to a given output stream
 	 */
 	void sendToStream(std::ostream &os);
+	void sendToStream(std::ostream &os, unsigned int amount);
 protected:
 
 	/*

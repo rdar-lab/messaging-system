@@ -23,10 +23,12 @@ public:
 	void performGetClientPublicKey(std::string clientName);
 	std::list<Message> performGetMessages();
 	void performSendTextMessage(std::string clientName, std::string messageText);
+	void performSendFile(std::string clientName, std::string fileName);
 	void performSendRequestForSymmetricKey(std::string clientName);
 	void performSendSymmetricKey(std::string clientName);
 private:
 	unsigned int sendMessage(ClientDef destinationClient, unsigned char messageType, void *messageContent, unsigned int messageLen);
+	unsigned int sendMessage(ClientDef destinationClient, unsigned char messageType, ByteBuffer* messageContentBuffer);
 	Response *resp;
 };
 

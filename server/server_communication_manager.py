@@ -1,8 +1,6 @@
 import logging
-import selectors
 import socket
 import threading
-import types
 
 from constants import *
 from model import Response

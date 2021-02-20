@@ -19,7 +19,9 @@
 #include "ClientDatastore.h"
 #include "ClientMetadataManager.h"
 #include "Utils.h"
-
+#include "CombineByteBuffer.h"
+#include "FileByteBuffer.h"
+#include <stdio.h>
 
 ClientLogicHandler::ClientLogicHandler() {
 	this->resp = NULL;
@@ -235,9 +237,20 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 					}
 					break;
 				case MESSAGE_TYPE_FILE_MESSAGE:
-					// TODO: implement me
 					{
-
+						std::string encryptedFileName(std::tmpnam(NULL));
+						std::ofstream out{encryptedFileName, std::ios::binary};
+						resp->getPayload()->sendToStream(out, messageLen);
+						out.close();
+						std::string messageFileName(std::tmpnam(NULL));
+						EncryptionUtils::symmetricDecryptFile(
+														ENCRYPTION_ALGORITHM_AES,
+														messageFromClient.getSymmetricKey(),
+														encryptedFileName,
+														messageFileName
+												);
+						std::remove(encryptedFileName.c_str());
+						messageContentTxt = std::string("FILE: ") + messageFileName;
 					}
 
 					break;
@@ -255,15 +268,20 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 }
 
 unsigned int ClientLogicHandler::sendMessage(ClientDef destinationClient, unsigned char messageType, void *messageContent, unsigned int messageLen){
-	unsigned int payloadLen = messageLen + CLIENT_ID_SIZE + MESSAGE_ID_SIZE + 1;
+	ByteBuffer *messageContentBuffer = new BinaryByteBuffer(messageContent, messageLen);
+	return ClientLogicHandler::sendMessage(destinationClient, messageType, messageContentBuffer);
+}
+
+unsigned int ClientLogicHandler::sendMessage(ClientDef destinationClient, unsigned char messageType, ByteBuffer* messageContentBuffer){
+	unsigned int payloadLen = CLIENT_ID_SIZE + MESSAGE_ID_SIZE + 1;
 	unsigned char payload[payloadLen];
 	std::memset(payload, 0, sizeof(payload));
 	destinationClient.getId().write(payload);
 	payload[CLIENT_ID_SIZE] = messageType;
-	Utils::convertToBytes(messageLen, payload+CLIENT_ID_SIZE+1, MESSAGE_LENGTH_SIZE);
-	std::copy((char*)messageContent, (char*)messageContent+messageLen, (char*)payload+CLIENT_ID_SIZE+MESSAGE_LENGTH_SIZE+1);
+	Utils::convertToBytes(messageContentBuffer->getBytesLeft(), payload+CLIENT_ID_SIZE+1, MESSAGE_LENGTH_SIZE);
 
-	ByteBuffer *payloadBuffer = new BinaryByteBuffer(payload, payloadLen);
+	ByteBuffer *headersBuffer = new BinaryByteBuffer(payload, payloadLen);
+	ByteBuffer *payloadBuffer = new CombineByteBuffer(headersBuffer, messageContentBuffer);
 	Request req(
 			ClientMetadataManager::getInstance()->getClientId(),
 			CLIENT_VERSION,
@@ -275,7 +293,6 @@ unsigned int ClientLogicHandler::sendMessage(ClientDef destinationClient, unsign
 		throw std::runtime_error("Message sending ERR. invalid response code: " + std::to_string(resp->getResponseCode()));
 	}
 	return resp->getPayload()->readInt();
-
 }
 
 void ClientLogicHandler::performSendTextMessage(std::string clientName, std::string messageText){
@@ -353,3 +370,33 @@ void ClientLogicHandler::performSendSymmetricKey(std::string clientName){
 	sendMessage(client, MESSAGE_TYPE_ENC_KEY_RESP, encryptedKeyBuffer, encrypterdMsgLen);
 }
 
+void ClientLogicHandler::performSendFile(std::string clientName,
+		std::string fileName) {
+	if (!ClientDatastore::getInstance()->clientExists(clientName)){
+		throw std::runtime_error("client does not exist");
+	}
+
+	ClientDef client = ClientDatastore::getInstance()->getClientByName(clientName);
+	if (client.getSymmetricKey().isEmpty()){
+		throw std::runtime_error("client symmetric key not loaded. First ask for key");
+	}
+
+	std::string tmpFileName(std::tmpnam(NULL));
+
+	EncryptionUtils::symmetricEncryptFile(
+				ENCRYPTION_ALGORITHM_AES,
+				client.getSymmetricKey(),
+				fileName,
+				tmpFileName
+		);
+
+	try{
+		ByteBuffer* buffer = new FileByteBuffer(tmpFileName);
+		sendMessage(client, MESSAGE_TYPE_FILE_MESSAGE, buffer);
+		std::remove(tmpFileName.c_str());
+	} catch (...){
+		std::remove(tmpFileName.c_str());
+		throw;
+	}
+
+}
