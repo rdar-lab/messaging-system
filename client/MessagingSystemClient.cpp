@@ -14,7 +14,6 @@
 #include "ClientMetadataManager.h"
 #include "ClientDatastore.h"
 #include "InMemClientDatastore.h"
-#include "ClientActionInvoker.h"
 #include "TestingManager.h"
 
 using namespace std;
@@ -46,19 +45,9 @@ int main(int argv, char* argc[]) {
 			InMemClientDatastore inMemDatastore;
 			ClientDatastore::setInstance(&inMemDatastore);
 
-			InteractiveMenuManager menuManger;
-			ClientActionInvoker invoker;
-			int exitInd = false;
+			InteractiveMenuManager menuManager;
+			menuManager.goIntoInteractiveMode();
 
-			while (!exitInd){
-					try{
-						int selectedOption = menuManger.showMenuAndGetUserAction();
-						exitInd = invoker.performAction(selectedOption);
-					}
-					catch (std::exception &exp){
-						std::cout << "error: " << exp.what() << std::endl;
-					}
-			}
 		} catch (std::exception &exp)
 		{
 			std::cout << "error: " << exp.what() << std::endl;

@@ -19,6 +19,10 @@ class RequestHandler:
             if req.get_client_id() is None or len(req.get_client_id()) == 0:
                 raise Exception("Invalid client id. got={}".format(req.get_client_id()))
 
+            client = self.__storage_manager.get_client(req.get_client_id())
+            if client is None:
+                raise Exception("Client not found")
+
             self.__storage_manager.update_last_seen(req.get_client_id())
 
             if req.get_request_code() == REQUEST_CODE_GET_CLIENTS_LIST:
