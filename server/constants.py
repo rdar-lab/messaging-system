@@ -44,3 +44,8 @@ MESSAGE_ID_SIZE = 4
 MESSAGE_LENGTH_SIZE = 4
 SYMMETRIC_KEY_SIZE = 16
 MESSAGE_TYPE_SIZE = 1
+
+# Storing files on DB requires loading them in full size to memory of the server
+# It is not recommended
+STORE_FILES_IN_DB = False
+FILE_STORE_FOLDER = "files/"

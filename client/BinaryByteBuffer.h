@@ -14,9 +14,10 @@ class BinaryByteBuffer : public ByteBuffer {
 public:
 	BinaryByteBuffer(void *data, unsigned int len);
 	virtual ~BinaryByteBuffer();
-	virtual unsigned short int readData(void *destinationBuffer,
-			unsigned short int lenToRead);
 	virtual unsigned int getBytesLeft();
+protected:
+	virtual unsigned short int readDataInternal(void *destinationBuffer,
+			unsigned short int lenToRead);
 private:
 	void* data;
 	unsigned int offset;

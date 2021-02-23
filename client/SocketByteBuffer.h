@@ -31,15 +31,16 @@ public:
 	virtual ~SocketByteBuffer();
 
 	/*
-	 * Reads a chunk of data
-	 */
-	virtual unsigned short int readData(void *destinationBuffer,
-			unsigned short int lenToRead) override;
-
-	/*
 	 * Returns the amount of data left to read
 	 */
 	virtual unsigned int getBytesLeft() override;
+
+protected:
+	/*
+	 * Reads a chunk of data
+	 */
+	virtual unsigned short int readDataInternal(void *destinationBuffer,
+			unsigned short int lenToRead) override;
 
 private:
 	boost::asio::ip::tcp::socket *socket;

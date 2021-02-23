@@ -21,9 +21,10 @@ class StrByteBuffer: public ByteBuffer
 public:
 	StrByteBuffer(std::string str);
 	virtual ~StrByteBuffer();
-	virtual unsigned short int readData(void *destinationBuffer,
-			unsigned short int lenToRead);
 	virtual unsigned int getBytesLeft();
+protected:
+	virtual unsigned short int readDataInternal(void *destinationBuffer,
+			unsigned short int lenToRead);
 private:
 	std::string str;
 	unsigned int offset;

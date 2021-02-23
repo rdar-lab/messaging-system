@@ -44,7 +44,7 @@ class ResponsePayloadWriter:
                 msg_body_len = len(msg_body)
                 self.__helper.write_int(msg_body_len)
                 if isinstance(msg_body, BytesBuffer):
-                    msg_body.write(self.__sock)
+                    msg_body.write_to_socket(self.__sock)
                 else:
                     self.__helper.write_bytes(msg_body)
 

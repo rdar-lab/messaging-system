@@ -190,11 +190,13 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 					break;
 				case MESSAGE_TYPE_ENC_KEY_RESP:
 					{
+						unsigned char encryptedKeyBuffer[messageLen];
+						resp->getPayload()->readData(encryptedKeyBuffer, messageLen);
+
 						if (messageFromClient.getSymmetricKey().isEmpty())
 						{
-							unsigned char encryptedKeyBuffer[BUFFER_SIZE];
 							unsigned char decryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
-							resp->getPayload()->readData(encryptedKeyBuffer, messageLen);
+
 							EncryptionUtils::pkiDecrypt(
 									ENCRYPTION_ALGORITHM_RSA,
 									ClientMetadataManager::getInstance()->getPrivatePublicKeyPair().getPrivateKey(),

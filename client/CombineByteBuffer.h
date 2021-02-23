@@ -14,9 +14,10 @@ class CombineByteBuffer: public ByteBuffer {
 public:
 	CombineByteBuffer(ByteBuffer* first, ByteBuffer* second);
 	virtual ~CombineByteBuffer();
-	virtual unsigned short int readData(void *destinationBuffer,
-			unsigned short int lenToRead);
 	virtual unsigned int getBytesLeft();
+protected:
+	virtual unsigned short int readDataInternal(void *destinationBuffer,
+			unsigned short int lenToRead);
 private:
 	ByteBuffer* first;
 	ByteBuffer* second;

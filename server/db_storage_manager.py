@@ -5,6 +5,8 @@ import threading
 from datetime import datetime
 
 from bytes_buffer import BytesBuffer
+from constants import MESSAGE_TYPE_FILE_MESSAGE, STORE_FILES_IN_DB
+from files_store import FileStore
 from model import Message, Client
 from storage_manager import StorageManager
 from utils import generate_client_id
@@ -177,15 +179,22 @@ class DbStorageManager(StorageManager):
         _logger.info("Adding new message, to_client_id={0}, from_client_id={1}, message_type={2}".format(
             to_client_id, from_client_id, message_type))
 
-        # translate message_content to the bytes representation
-        # TODO: replace with file implementation to save server memory with dealing with very large files
+        external_file_buffer = None
         if isinstance(message_content, BytesBuffer):
-            length = len(message_content)
-            message_content = message_content.read(length)
+            if message_type != MESSAGE_TYPE_FILE_MESSAGE or STORE_FILES_IN_DB:
+                length = len(message_content)
+                message_content = message_content.read(length)
+            else:
+                external_file_buffer = message_content
+                message_content = None
 
         with self.__open_connection() as conn:
             message_id = conn.execute_and_get_id(_INSERT_MSG_SQL,
                                                  params=(to_client_id, from_client_id, message_type, message_content))
+
+            if external_file_buffer is not None:
+                FileStore.store_file("MSG" + str(message_id), external_file_buffer)
+
             msg = Message(message_id, to_client_id, from_client_id, message_type, message_content)
             _logger.info("New message: {}".format(msg))
             return msg
@@ -200,12 +209,24 @@ class DbStorageManager(StorageManager):
             rows = conn.execute_and_get_result(sql, params=(client_id,))
             messages = []
             for row in rows:
+                message_id = row["message_id"]
+                to_client_id = row["to_client_id"]
+                from_client_id = row["from_client_id"]
+                message_type = row["message_type"]
+                message_content = row["message_content"]
+
+                if message_type == MESSAGE_TYPE_FILE_MESSAGE and message_content is None:
+                    message_content = FileStore.read_file("MSG" + str(message_id))
+
+                    if message_content is None:
+                        message_content = b'-Missing-'
+
                 msg = Message(
-                    row["message_id"],
-                    row["to_client_id"],
-                    row["from_client_id"],
-                    row["message_type"],
-                    row["message_content"]
+                    message_id,
+                    to_client_id,
+                    from_client_id,
+                    message_type,
+                    message_content
                 )
                 messages.append(msg)
             _logger.info("Messages={}".format(messages))
@@ -217,6 +238,8 @@ class DbStorageManager(StorageManager):
                 msg_id = msg.get_message_id()
                 _logger.info("Removing message: {}".format(msg_id))
                 conn.execute(_DELETE_MESSAGE_BY_ID_SQL, params=(msg_id,))
+                if msg.get_message_type() == MESSAGE_TYPE_FILE_MESSAGE and not STORE_FILES_IN_DB:
+                    FileStore.remove_file("MSG" + str(msg_id))
 
     # noinspection PyBroadException
     def validate_db(self):

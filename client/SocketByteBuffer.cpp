@@ -20,7 +20,7 @@ SocketByteBuffer::~SocketByteBuffer()
 
 }
 
-unsigned short int SocketByteBuffer::readData(void *destinationBuffer,
+unsigned short int SocketByteBuffer::readDataInternal(void *destinationBuffer,
 		unsigned short lenToRead)
 {
 	if (lenToRead > this->getBytesLeft())

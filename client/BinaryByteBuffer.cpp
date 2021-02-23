@@ -18,7 +18,7 @@ BinaryByteBuffer::~BinaryByteBuffer()
 {
 }
 
-unsigned short int BinaryByteBuffer::readData(void *destinationBuffer,
+unsigned short int BinaryByteBuffer::readDataInternal(void *destinationBuffer,
 		unsigned short int lenToReadInput)
 {
 	unsigned short amountToRead = getBytesLeft();

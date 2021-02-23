@@ -45,6 +45,39 @@ void ByteBuffer::sendToStream(std::ostream &os, unsigned int amountToTransfer)
 	}
 }
 
+unsigned short ByteBuffer::readData(void *destinationBuffer,
+			unsigned short lenToRead)
+{
+	unsigned short lenRead = 0;
+
+	if (lenToRead > this->getBytesLeft())
+	{
+		lenToRead = this->getBytesLeft();
+	}
+
+	while (lenToRead > lenRead)
+	{
+		int amount = lenToRead - lenRead;
+		if (amount>BUFFER_SIZE)
+		{
+			amount = BUFFER_SIZE;
+		}
+
+		amount = this->readDataInternal(((unsigned char*)destinationBuffer)+lenRead, amount);
+		if (amount <= 0)
+		{
+			throw std::runtime_error(
+					"Invalid state detected, read data returned non positive value");
+		}
+		else
+		{
+			lenRead = lenRead + amount;
+		}
+	}
+	return lenRead;
+
+}
+
 unsigned char ByteBuffer::readByte()
 {
 	if (this->getBytesLeft()==0){
