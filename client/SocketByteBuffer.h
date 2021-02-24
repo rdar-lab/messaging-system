@@ -39,8 +39,8 @@ protected:
 	/*
 	 * Reads a chunk of data
 	 */
-	virtual unsigned short int readDataInternal(void *destinationBuffer,
-			unsigned short int lenToRead) override;
+	virtual unsigned int readDataInternal(void *destinationBuffer,
+			unsigned int lenToRead) override;
 
 private:
 	boost::asio::ip::tcp::socket *socket;

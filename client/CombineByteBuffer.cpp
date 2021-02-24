@@ -18,17 +18,17 @@ CombineByteBuffer::~CombineByteBuffer() {
 	delete this->second;
 }
 
-unsigned short int CombineByteBuffer::readDataInternal(void *destinationBuffer,
-		unsigned short int lenToRead) {
+unsigned int CombineByteBuffer::readDataInternal(void *destinationBuffer,
+		unsigned int lenToRead) {
 	if (lenToRead>0 && this->first->getBytesLeft()>0){
-		unsigned short amountRead = this->first->readDataInternal(destinationBuffer, lenToRead);
+		unsigned int amountRead = this->first->readDataInternal(destinationBuffer, lenToRead);
 		if (amountRead == 0){
 			throw std::runtime_error("EOF");
 		}
 		return amountRead;
 	}
 	if (lenToRead>0 && this->second->getBytesLeft()>0){
-		unsigned short amountRead = this->second->readDataInternal(destinationBuffer, lenToRead);
+		unsigned int amountRead = this->second->readDataInternal(destinationBuffer, lenToRead);
 		if (amountRead == 0){
 			throw std::runtime_error("EOF");
 		}

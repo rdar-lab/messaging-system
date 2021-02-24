@@ -32,8 +32,8 @@ public:
 	 * Read the data into the input buffer with a maximum of len to read amount as
 	 * parameter
 	 */
-	unsigned short readData(void *destinationBuffer,
-			unsigned short lenToRead);
+	unsigned int readData(void *destinationBuffer,
+			unsigned int lenToRead);
 
 	unsigned char  readByte();
 	unsigned short readShort();
@@ -50,8 +50,8 @@ protected:
 	 * Protected Ctor, since this is an abstract class
 	 */
 	ByteBuffer();
-	virtual unsigned short readDataInternal(void *destinationBuffer,
-			unsigned short lenToRead) = 0;
+	virtual unsigned int readDataInternal(void *destinationBuffer,
+			unsigned int lenToRead) = 0;
 	friend class CombineByteBuffer;
 };
 

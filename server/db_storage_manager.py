@@ -16,22 +16,27 @@ _logger = logging.getLogger(__name__)
 _DB_FILE_NAME = "server.db"
 _DB_CONNECTION_TIMEOUT = 5
 
+_PRAGMA_ACTIVATE_FK_SQL = "PRAGMA foreign_keys = ON"
+
 _COUNT_CLIENTS_SQL = "SELECT COUNT(*) AS rows_count FROM clients"
 _COUNT_MESSAGES_SQL = "SELECT COUNT(*) AS rows_count FROM messages"
 _CREATE_TABLE_CLIENTS_SQL = \
     "CREATE TABLE clients(" \
     "   client_id TEXT PRIMARY KEY, " \
-    "   client_name TEXT unique," \
-    "   client_pk BLOB," \
+    "   client_name TEXT NOT NULL unique," \
+    "   client_pk BLOB NOT NULL," \
     "   last_update TIMESTAMP) "
 
 _CREATE_TABLE_MESSAGES_SQL = \
     "CREATE TABLE messages(" \
-    "   message_id INTEGER PRIMARY KEY, " \
-    "   from_client_id TEXT, " \
-    "   to_client_id TEXT, " \
-    "   message_type TINYINT, " \
-    "   message_content BLOB)"
+    "   message_id INTEGER PRIMARY KEY AUTOINCREMENT, " \
+    "   from_client_id TEXT NOT NULL, " \
+    "   to_client_id TEXT NOT NULL, " \
+    "   message_type TINYINT NOT NULL, " \
+    "   message_content BLOB, " \
+    "   FOREIGN KEY(from_client_id) REFERENCES clients(client_id), " \
+    "   FOREIGN KEY(to_client_id) REFERENCES clients(client_id) " \
+    " )"
 _SELECT_ALL_CLIENTS_SQL = "SELECT * FROM clients"
 _SELECT_CLIENT_BY_CLIENT_ID_SQL = "SELECT * FROM clients WHERE client_id=?"
 _INSERT_CLIENT_SQL = "INSERT INTO clients(client_id, client_name, client_pk) VALUES(?,?,?)"
@@ -57,6 +62,7 @@ class _DbConnection:
         _db_conn_global_lock.acquire()
         _logger.debug("Opening connection")
         self.__conn = sqlite3.connect(_DB_FILE_NAME, timeout=_DB_CONNECTION_TIMEOUT)
+        self.execute(_PRAGMA_ACTIVATE_FK_SQL)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

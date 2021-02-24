@@ -20,10 +20,10 @@ StrByteBuffer::~StrByteBuffer()
 {
 }
 
-unsigned short int StrByteBuffer::readDataInternal(void *destinationBuffer,
-		unsigned short int lenToReadInput)
+unsigned int StrByteBuffer::readDataInternal(void *destinationBuffer,
+		unsigned int lenToReadInput)
 {
-	unsigned short amountToRead = getBytesLeft();
+	unsigned int amountToRead = getBytesLeft();
 	if (amountToRead > lenToReadInput)
 	{
 		amountToRead = lenToReadInput;

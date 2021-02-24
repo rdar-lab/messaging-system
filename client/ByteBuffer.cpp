@@ -45,10 +45,10 @@ void ByteBuffer::sendToStream(std::ostream &os, unsigned int amountToTransfer)
 	}
 }
 
-unsigned short ByteBuffer::readData(void *destinationBuffer,
-			unsigned short lenToRead)
+unsigned int ByteBuffer::readData(void *destinationBuffer,
+			unsigned int lenToRead)
 {
-	unsigned short lenRead = 0;
+	unsigned int lenRead = 0;
 
 	if (lenToRead > this->getBytesLeft())
 	{

@@ -16,8 +16,8 @@ public:
 	virtual ~CombineByteBuffer();
 	virtual unsigned int getBytesLeft();
 protected:
-	virtual unsigned short int readDataInternal(void *destinationBuffer,
-			unsigned short int lenToRead);
+	virtual unsigned int readDataInternal(void *destinationBuffer,
+			unsigned int lenToRead);
 private:
 	ByteBuffer* first;
 	ByteBuffer* second;

@@ -23,8 +23,8 @@ FileByteBuffer::~FileByteBuffer()
 	this->fileStream.close();
 }
 
-unsigned short int FileByteBuffer::readDataInternal(void *destinationBuffer,
-		unsigned short int lenToRead)
+unsigned int FileByteBuffer::readDataInternal(void *destinationBuffer,
+		unsigned int lenToRead)
 {
 	int amount = this->fileStream.readsome((char*)destinationBuffer, lenToRead);
 

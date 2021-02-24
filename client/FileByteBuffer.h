@@ -39,8 +39,8 @@ protected:
 	/*
 	 * Reads the data based on chunks
 	 */
-	virtual unsigned short int readDataInternal(void *destinationBuffer,
-			unsigned short int lenToRead);
+	virtual unsigned int readDataInternal(void *destinationBuffer,
+			unsigned int lenToRead);
 
 private:
 	unsigned int fileSize;
