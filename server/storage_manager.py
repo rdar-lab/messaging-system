@@ -4,6 +4,11 @@ from model import Client, Message
 
 
 class StorageManager(ABC):
+    """
+    An abstract class for the server storage manager
+    The storage manager is responsible for storing clients and messages
+    """
+
     @abstractmethod
     def get_all_clients(self) -> dict:
         raise NotImplementedError()

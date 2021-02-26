@@ -6,6 +6,10 @@ from socket_helper import SockHelper
 
 
 class ResponseWriter:
+    """
+    The ResponseWriter is responsible for writing the response to the socket
+    """
+
     def __init__(self, sock: socket.socket):
         self.__sock = sock
         self.__helper = SockHelper(self.__sock)

@@ -7,6 +7,12 @@ from socket_helper import SockHelper
 
 
 class BytesBuffer(ABC):
+    """
+    Bytes buffer is an abstract representation of a wrapper to various byte stream inputs
+    that should support big size data, with a chunked implementation
+    so that the entire byte stream will not need to be in-mem on
+    """
+
     def __len__(self):
         raise NotImplementedError()
 
@@ -28,6 +34,10 @@ class BytesBuffer(ABC):
 
 
 class SocketBytesBuffer(BytesBuffer):
+    """
+    A socket based implementation of a bytes buffer
+    """
+
     def __len__(self):
         return self.__length
 
@@ -47,6 +57,10 @@ class SocketBytesBuffer(BytesBuffer):
 
 
 class FileBytesBuffer(BytesBuffer):
+    """
+    A file based implementation of byte buffer
+    """
+
     def __len__(self):
         return self.__length
 

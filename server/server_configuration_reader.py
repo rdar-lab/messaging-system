@@ -3,6 +3,10 @@ from abc import ABC
 
 
 class ServerConfigurationReader(ABC):
+    """
+    Reads the server configuration from the file and returns it
+    """
+
     @staticmethod
     def get_port():
         if not os.path.isfile("port.info"):

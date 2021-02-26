@@ -2,16 +2,14 @@ import os
 import socket
 import struct
 
-_MAX_STR_LEN = 255
-_MAX_BYTES_LEN = 1024 * 1024 * 10
-
-_BUFFER_SIZE = 1000
+from constants import *
 
 
 class SockHelper:
-    #
-    # Helper to work with a socket
-    #
+    """
+    Helper to work with a socket
+    """
+
     def __init__(self, sock: socket.socket):
         self.sock = sock
 
@@ -61,7 +59,7 @@ class SockHelper:
         #
         # Reads an STR (of given size)
         #
-        if size > _MAX_STR_LEN:
+        if size > MAX_STR_LEN:
             raise Exception("Str len is bigger than the maximum allowed")
 
         data = self.__read_binary(size)
@@ -79,7 +77,7 @@ class SockHelper:
         #
         # Reads a bytes array
         #
-        if size > _MAX_BYTES_LEN:
+        if size > MAX_PAYLOAD_BYTES:
             raise Exception("Payload len is bigger than the maximum allowed")
 
         return self.__read_binary(size)
@@ -102,7 +100,7 @@ class SockHelper:
 
         with open(file_name, "rb") as file:
             while True:
-                piece = file.read(_BUFFER_SIZE)
+                piece = file.read(BUFFER_SIZE)
                 if not piece:
                     break
                 self.__write_binary(piece)
@@ -114,7 +112,7 @@ class SockHelper:
         size = self.read_int()
         amount_left = size
 
-        if size > _MAX_BYTES_LEN:
+        if size > MAX_PAYLOAD_BYTES:
             raise Exception("Payload len is bigger than the maximum allowed")
 
         print("Receiving file of size {0}, and storing at {1}".format(size, file_name))
@@ -122,8 +120,8 @@ class SockHelper:
         with open(file_name, "wb") as file:
             while amount_left > 0:
                 amount_to_read = amount_left
-                if amount_to_read > _BUFFER_SIZE:
-                    amount_to_read = _BUFFER_SIZE
+                if amount_to_read > BUFFER_SIZE:
+                    amount_to_read = BUFFER_SIZE
                 data = self.__read_binary(amount_to_read)
                 file.write(data)
                 amount_left = amount_left - amount_to_read

@@ -5,6 +5,8 @@ from db_storage_manager import DbStorageManager
 from server_communication_manager import ServerCommunicationManager
 from server_configuration_reader import ServerConfigurationReader
 
+# MAIN start .py file for the server
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, stream=stdout,
                         format="%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s")

@@ -7,6 +7,10 @@ from socket_helper import SockHelper
 
 
 class ResponsePayloadWriter:
+    """
+    The response payload writer is responsible for writing the response payload to the socket
+    """
+
     def __init__(self, resp: Response, sock: socket):
         super().__init__()
         self.__resp = resp

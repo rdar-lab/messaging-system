@@ -13,6 +13,11 @@ _logger = logging.getLogger(__name__)
 
 
 class ServerCommunicationManager:
+    """
+    This manager is responsible for starting the TCP server
+    and manage the incoming connections
+    """
+
     def __init__(self, storage_manager: StorageManager, port: int):
         self.__storage_manager = storage_manager
         self.__port = port
@@ -32,6 +37,7 @@ class ServerCommunicationManager:
         finally:
             sock.close()
 
+    # noinspection PyBroadException
     def __handle_data(self, sock, addr):
         try:
             request_reader = RequestReader(sock)

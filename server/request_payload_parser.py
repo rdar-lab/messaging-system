@@ -6,6 +6,9 @@ from socket_helper import SockHelper
 
 
 class RequestPayloadParser:
+    """
+    The RequestPayloadParser parses the payload according to the request code
+    """
 
     def __init__(self, request_code, sock: socket, payload_size: int):
         super().__init__()

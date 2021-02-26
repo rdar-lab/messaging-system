@@ -9,6 +9,11 @@ _logger = logging.getLogger(__name__)
 
 
 class FileStore(ABC):
+    """
+    The file store allows to easily store and get files
+    The operations are implemented with bytes buffer to allow support for big files
+    """
+
     @staticmethod
     def store_file(file_name, bytes_buffer: BytesBuffer):
         if not os.path.exists(FILE_STORE_FOLDER):

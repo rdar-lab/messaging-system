@@ -3,6 +3,10 @@ from utils import auto_str
 
 @auto_str
 class Client:
+    """
+    A client in the messaging system
+    """
+
     def __init__(self, client_id, client_name, client_public_key):
         self.__client_id = client_id
         self.__client_name = client_name
@@ -27,6 +31,10 @@ class Client:
 
 @auto_str
 class Message:
+    """
+    A message in the messaging system
+    """
+
     def __init__(self, message_id, to_client_id, from_client_id, message_type, message_content):
         self.__message_id = message_id
         self.__to_client_id = to_client_id
@@ -52,6 +60,10 @@ class Message:
 
 @auto_str
 class Request:
+    """
+    A request in the messaging system
+    """
+
     def __init__(self, version, client_id, request_code, payload_map):
         self.__version = version
         self.__client_id = client_id
@@ -73,6 +85,10 @@ class Request:
 
 @auto_str
 class Response:
+    """
+    A response in the messaging system
+    """
+
     def __init__(self, version, response_code, payload_map):
         self.__version = version
         self.__response_code = response_code

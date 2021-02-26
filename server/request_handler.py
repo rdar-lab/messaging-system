@@ -8,6 +8,10 @@ _logger = logging.getLogger(__name__)
 
 
 class RequestHandler:
+    """
+    The request handler is responsible for handing the request and returning the response
+    """
+
     def __init__(self, storage_manager: StorageManager):
         self.__storage_manager = storage_manager
 

@@ -12,6 +12,10 @@ _logger = logging.getLogger(__name__)
 
 
 class InMemStorageManager(StorageManager):
+    """
+    An in memory implementation of a storage manager
+    """
+
     def __init__(self):
         self.__clients = {}
         self.__messages = {}
@@ -62,7 +66,7 @@ class InMemStorageManager(StorageManager):
 
     def add_message(self, to_client_id, from_client_id, message_type, message_content) -> Message:
         # translate message_content to the bytes representation
-        # TODO: replace with file implementation to save server memory with dealing with very large files
+        # this will make the server load the entire byte data into the memory
         if isinstance(message_content, BytesBuffer):
             length = len(message_content)
             message_content = message_content.read(length)

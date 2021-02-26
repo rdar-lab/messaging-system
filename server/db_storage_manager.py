@@ -114,6 +114,10 @@ class _DbConnection:
 
 
 class DbStorageManager(StorageManager):
+    """
+    A storage manager for the messaging system which is implemented on an SQLite implementation
+    """
+
     def __init__(self):
         is_ok = False
         if os.path.exists(_DB_FILE_NAME):

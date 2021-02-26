@@ -7,6 +7,10 @@ from socket_helper import SockHelper
 
 
 class RequestReader:
+    """
+    Reads the request from the socket and returns it
+    """
+
     def __init__(self, sock: socket.socket):
         self.__sock = sock
         self.__helper = SockHelper(self.__sock)
