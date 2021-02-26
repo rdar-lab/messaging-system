@@ -99,12 +99,12 @@ Again, like on the client->server channel, if the server gains remote code execu
 
 We will now review all the issues we detected, and we will assign probability and severity, and possible mitigation steps for each one
 
-Item | Desc | Probability | Severity | Possible mitigation
----|---|---|---|---
-ISSUE_1|Client masquerade as another user|High|High|Authenticate all client requests, for example using signature on each request
-ISSUE_2|User claims he did not send a message|Medium|Low|Sender should sign all messages. All messages should be kept on the server for a period of time
-ISSUE_3|Client DOS of server|Low|High|Limit the users number of operations per minute
-ISSUE_4|Client RCE on server|Very low|Critical|Run the server on limited user. Sandbox the server (e.g. run inside container)
-ISSUE_5|Rouge/Fake server|High|High|Use server certificates and validate it's identity (i.e. use TLS with CA certificates)
-ISSUE_6|Server DOS a client|Low|Low|Limit the number of messages a user can receive
-ISSUE_7|Server RCE on server|Low|High|Run the client on limited user. Sandbox the client
+Item | Desc | STRIDE|Probability | Severity | Possible mitigation
+---|---|---|---|---|---
+ISSUE_1|Client masquerade as another user|S|High|High|Authenticate all client requests, for example using signature on each request
+ISSUE_2|User claims he did not send a message|R|Medium|Low|Sender should sign all messages. All messages should be kept on the server for a period of time
+ISSUE_3|Client DOS of server|D|Low|High|Limit the users number of operations per minute
+ISSUE_4|Client RCE on server|E|Very low|Critical|Run the server on limited user. Sandbox the server (e.g. run inside container)
+ISSUE_5|Rouge/Fake server|S|High|High|Use server certificates and validate it's identity (i.e. use TLS with CA certificates)
+ISSUE_6|Server DOS a client|D|Low|Low|Limit the number of messages a user can receive
+ISSUE_7|Server RCE on server|E|Low|High|Run the client on limited user. Sandbox the client
