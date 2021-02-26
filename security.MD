@@ -97,7 +97,7 @@ Again, like on the client->server channel, if the server gains remote code execu
 
 ## Risk assessment 
 
-We will not review all the issues we detected, and we will assign probability and severity, and possible mitigation steps for each one
+We will now review all the issues we detected, and we will assign probability and severity, and possible mitigation steps for each one
 
 Item | Desc | Probability | Severity | Possible mitigation
 ---|---|---|---|---
