@@ -134,6 +134,8 @@ Using Visual studio you will need to set up Boost and Crypto++ and then compile 
 
 #### Linux
 
+The client was tested on Linux x64 / Ubuntu OS.
+
 Using eclipse, set up Boost and Crypto++, and compile the project
 
 ### How to run the client
