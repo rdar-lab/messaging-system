@@ -83,6 +83,7 @@ void ClientLogicHandler::performGetClientsList(){
 				ClientId clientId(clientIdBuffer);
 				char nameBuff[STR_SIZE];
 				resp->getPayload()->readData(nameBuff, STR_SIZE);
+				nameBuff[STR_SIZE - 1] = 0;
 				std::string name(nameBuff);
 				ClientDef client(clientId,  name);
 				if (!ClientDatastore::getInstance()->clientExists(clientId)){
@@ -169,7 +170,7 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 
 				unsigned char messageLenBuffer[MESSAGE_LENGTH_SIZE];
 				resp->getPayload()->readData(messageLenBuffer, MESSAGE_LENGTH_SIZE);
-				unsigned int messageLen = Utils::convertToNum(messageLenBuffer, MESSAGE_LENGTH_SIZE);
+				const unsigned int messageLen = Utils::convertToNum(messageLenBuffer, MESSAGE_LENGTH_SIZE);
 
 				if (messageLen > MAX_MSG_BODY_BYTES)
 				{
@@ -190,7 +191,7 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 					break;
 				case MESSAGE_TYPE_ENC_KEY_RESP:
 					{
-						unsigned char encryptedKeyBuffer[messageLen];
+						unsigned char* encryptedKeyBuffer = new unsigned char[messageLen];
 						resp->getPayload()->readData(encryptedKeyBuffer, messageLen);
 
 						if (messageFromClient.getSymmetricKey().isEmpty())
@@ -216,15 +217,16 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 						{
 							messageContentTxt = "Symmetric key received, but ignored (already exists for client)";
 						}
+						delete[] encryptedKeyBuffer;
 					}
 					break;
 				case MESSAGE_TYPE_TEXT_MESSAGE:
 					{
-						unsigned char messageBuffer[messageLen];
+						unsigned char* messageBuffer = new unsigned char[messageLen];
 						resp->getPayload()->readData(messageBuffer, messageLen);
 
-						unsigned char decryptedMessageBuffer[messageLen+EXTRA_MESSAGE_BUFFER];
-						std::memset(decryptedMessageBuffer, 0, sizeof(decryptedMessageBuffer));
+						unsigned char* decryptedMessageBuffer = new unsigned char[messageLen+EXTRA_MESSAGE_BUFFER];
+						std::memset(decryptedMessageBuffer, 0, messageLen+EXTRA_MESSAGE_BUFFER);
 						EncryptionUtils::symmetricDecrypt(
 								ENCRYPTION_ALGORITHM_AES,
 								messageFromClient.getSymmetricKey(),
@@ -236,6 +238,8 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 
 						std::string msgText((char*)decryptedMessageBuffer);
 						messageContentTxt = msgText;
+						delete[] messageBuffer;
+						delete[] decryptedMessageBuffer;
 					}
 					break;
 				case MESSAGE_TYPE_FILE_MESSAGE:
@@ -275,7 +279,7 @@ unsigned int ClientLogicHandler::sendMessage(ClientDef destinationClient, unsign
 }
 
 unsigned int ClientLogicHandler::sendMessage(ClientDef destinationClient, unsigned char messageType, ByteBuffer* messageContentBuffer){
-	unsigned int payloadLen = CLIENT_ID_SIZE + MESSAGE_ID_SIZE + 1;
+	unsigned const int payloadLen = CLIENT_ID_SIZE + MESSAGE_ID_SIZE + 1;
 	unsigned char payload[payloadLen];
 	std::memset(payload, 0, sizeof(payload));
 	destinationClient.getId().write(payload);
@@ -307,8 +311,8 @@ void ClientLogicHandler::performSendTextMessage(std::string clientName, std::str
 		throw std::runtime_error("client symmetric key not loaded. First ask for key");
 	}
 
-	unsigned char encryptedMessageBuffer[messageText.length()+EXTRA_MESSAGE_BUFFER];
-	std::memset(encryptedMessageBuffer, 0, sizeof(encryptedMessageBuffer));
+	unsigned char* encryptedMessageBuffer = new unsigned char[messageText.length()+EXTRA_MESSAGE_BUFFER];
+	std::memset(encryptedMessageBuffer, 0, messageText.length()+EXTRA_MESSAGE_BUFFER);
 	unsigned int encryptedTextLen = EncryptionUtils::symmetricEncrypt(
 			ENCRYPTION_ALGORITHM_AES,
 			client.getSymmetricKey(),
@@ -319,6 +323,7 @@ void ClientLogicHandler::performSendTextMessage(std::string clientName, std::str
 	);
 
 	sendMessage(client, MESSAGE_TYPE_TEXT_MESSAGE, encryptedMessageBuffer, encryptedTextLen);
+	delete[] encryptedMessageBuffer;
 }
 
 void ClientLogicHandler::performSendRequestForSymmetricKey(std::string clientName){

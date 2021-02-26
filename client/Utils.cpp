@@ -10,10 +10,12 @@
 #include <string>
 #include <iomanip>
 #include <vector>
+#include <sstream>
 
 #include <boost/uuid/uuid.hpp>            // uuid class
 #include <boost/uuid/uuid_generators.hpp> // generators
 #include <boost/uuid/uuid_io.hpp>         // streaming operators etc.
+#include <boost/filesystem.hpp>
 
 Utils::Utils() {
 }
@@ -199,5 +201,5 @@ std::string Utils::generateTmpFilename() {
     std::stringstream uuid_stream;
     uuid_stream << uuid;
 
-	return std::string(P_tmpdir) + std::string("/") + uuid_stream.str();
+	return std::string((boost::filesystem::temp_directory_path() / uuid_stream.str()).string());
 }

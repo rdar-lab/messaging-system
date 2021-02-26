@@ -19,15 +19,15 @@
 using namespace std;
 
 int main(int argv, char* argc[]) {
-	// If there is a "test" parameter invoke all tests
-	if (argv>1 && std::string(argc[1])=="test")
-	{
-		TestingManager::performTests();
-		return 0;
-	}
-
 	try
 		{
+			// If there is a "test" parameter invoke all tests
+			if (argv > 1 && std::string(argc[1]) == "test")
+			{
+				TestingManager::performTests();
+				return 0;
+			}
+
 			ConfigurationFileReader serverConfigReader(SERVER_CONFIGURATION_FILE_LOCATION);
 			std::string host = serverConfigReader.getServerHost();
 			unsigned short port = serverConfigReader.getServerPort();

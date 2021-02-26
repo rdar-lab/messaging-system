@@ -260,13 +260,13 @@ void EncryptionUtils::symmetricEncryptFile(unsigned short algorithm,
 	e.SetKeyWithIV(keyBuffer, sizeof(keyBuffer), iv);
 
 	std::ifstream in{sourceFileName, std::ios::binary};
-	if (not in.good()){
+	if (!in.good()){
 		throw std::runtime_error("File not found");
 	}
 
 	std::ofstream out{destFileName, std::ios::binary};
 	try{
-		CryptoPP::FileSource{in, /*pumpAll=*/true,
+		CryptoPP::FileSource fs{in, /*pumpAll=*/true,
 						   new CryptoPP::StreamTransformationFilter{
 							   e, new CryptoPP::FileSink{out}}};
 		in.close();
@@ -305,13 +305,13 @@ void EncryptionUtils::symmetricDecryptFile(unsigned short algorithm,
 	d.SetKeyWithIV(keyBuffer, sizeof(keyBuffer), iv);
 
 	std::ifstream in{sourceFileName, std::ios::binary};
-	if (not in.good()){
+	if (!in.good()){
 		throw std::runtime_error("File not found");
 	}
 
 	std::ofstream out{destFileName, std::ios::binary};
 	try{
-		CryptoPP::FileSource{in, /*pumpAll=*/true,
+		CryptoPP::FileSource fs{in, /*pumpAll=*/true,
 						   new CryptoPP::StreamTransformationFilter{
 							   d, new CryptoPP::FileSink{out}}};
 		in.close();

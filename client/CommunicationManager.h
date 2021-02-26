@@ -34,6 +34,11 @@ private:
 
 	std::string host;
 	unsigned int port;
+
+	boost::asio::io_service *io_service;
+	boost::asio::io_context *io_context;
+	tcp::resolver *resolver;
+
 };
 
 #endif /* COMMUNICATIONMANAGER_H_ */
