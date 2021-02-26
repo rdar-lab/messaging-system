@@ -2,7 +2,7 @@
  * ClientMetadataReader.h
  *
  *  Created on: 13 Feb 2021
- *      Author: xmaster
+ *      Author: Roy Dar
  */
 #include <string>
 #include "PrivatePublicKeyPair.h"
@@ -11,6 +11,10 @@
 #ifndef CLIENTMETADATAMANAGER_H_
 #define CLIENTMETADATAMANAGER_H_
 
+/*
+ * The metadata manager is responsible for reading and saving this client information.
+ * The information it holds: The ID, name, and the PKI pair
+ */
 class ClientMetadataManager {
 public:
 	static ClientMetadataManager* getInstance();

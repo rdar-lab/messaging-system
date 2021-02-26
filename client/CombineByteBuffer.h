@@ -2,7 +2,7 @@
  * CombineByteBuffer.h
  *
  *  Created on: 20 Feb 2021
- *      Author: xmaster
+ *      Author: Roy Dar
  */
 
 #ifndef COMBINEBYTEBUFFER_H_
@@ -10,6 +10,10 @@
 
 #include "ByteBuffer.h"
 
+/*
+ * An implementation of ByteBuffer that allows combination of two other byte buffers without
+ * Loading them into the memory
+ */
 class CombineByteBuffer: public ByteBuffer {
 public:
 	CombineByteBuffer(ByteBuffer* first, ByteBuffer* second);

@@ -14,23 +14,15 @@
 using boost::asio::ip::tcp;
 
 /*
- * ResponseReader
- * --------------
- * Responsible for writing a response to the socket
+ * Responsible for reading a request from the socket
  */
 class ResponseReader
 {
 public:
-	/*
-	 * Ctor
-	 */
 	ResponseReader(boost::shared_ptr<tcp::socket> socket);
 
 	Response * readResponse();
 
-	/*
-	 * Dtor
-	 */
 	virtual ~ResponseReader();
 private:
 	// The socket to use

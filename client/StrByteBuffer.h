@@ -11,8 +11,6 @@
 #include "ByteBuffer.h"
 
 /*
- * StrByteBuffer
- * -------------
  * A byte buffer based on an STR. Although the interface is the same, using this implementation,
  * the entire STR is held in memory
  */

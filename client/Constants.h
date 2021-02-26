@@ -1,5 +1,5 @@
 /*
- * constants.h
+ * Constants.h
  *
  *  Created on: 2 Jan 2021
  *      Author: Roy Dar

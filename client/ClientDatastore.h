@@ -2,7 +2,7 @@
  * ClientDatastore.h
  *
  *  Created on: 13 Feb 2021
- *      Author: xmaster
+ *      Author: Roy Dar
  */
 
 #ifndef CLIENTDATASTORE_H_
@@ -13,6 +13,12 @@
 #include <map>
 #include <list>
 
+/*
+ * A Datastore for the client.
+ * The datastore is responsible for holding all the clients and their information
+ * This is an abstract/interface of the datastore
+ *
+ */
 class ClientDatastore {
 public:
 	static ClientDatastore* getInstance();

@@ -2,7 +2,7 @@
  * InteractiveMenuManager.h
  *
  *  Created on: 13 Feb 2021
- *      Author: xmaster
+ *      Author: Roy Dar
  */
 
 #ifndef INTERACTIVEMENUMANAGER_H_
@@ -10,7 +10,10 @@
 
 #include <string>
 
-
+/*
+ * The interactive menu manager is responsible for showing the user the menu of operations, and performing the operation
+ * based on the user selected option
+ */
 class InteractiveMenuManager {
 public:
 	InteractiveMenuManager();

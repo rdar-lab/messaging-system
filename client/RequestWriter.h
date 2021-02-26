@@ -14,26 +14,15 @@
 using boost::asio::ip::tcp;
 
 /*
- * RequestWriter
- * -------------
- * Reads the data from the socket and returns a "request" object
+ * Writes a "request" object to a socket
  */
 class RequestWriter
 {
 public:
-	/*
-	 * Ctor
-	 */
 	RequestWriter(boost::shared_ptr<tcp::socket> socket);
 
-	/*
-	 * Reads from the socket and returns the request
-	 */
 	void writeRequest(Request*);
 
-	/*
-	 * Dtor
-	 */
 	virtual ~RequestWriter();
 private:
 	// The socket to use

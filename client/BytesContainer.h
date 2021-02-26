@@ -2,7 +2,7 @@
  * BytesContainer.h
  *
  *  Created on: 14 Feb 2021
- *      Author: xmaster
+ *      Author: Roy Dar
  */
 
 #ifndef BYTESCONTAINER_H_
@@ -16,7 +16,9 @@
 #include <string>
 #include "Utils.h"
 
-
+/*
+ * A generic class of a static predefined size of bytes
+ */
 template <int N> class BytesContainer {
 public:
 	BytesContainer<N>(){

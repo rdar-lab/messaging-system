@@ -2,7 +2,7 @@
  * SymmetricKey.h
  *
  *  Created on: 13 Feb 2021
- *      Author: xmaster
+ *      Author: Roy Dar
  */
 
 #ifndef SYMMETRICKEY_H_
@@ -11,6 +11,9 @@
 #include "BytesContainer.h"
 #include "Constants.h"
 
+/*
+ * A SymmetricKey in our system. An instance of BytesContainer of SYMMETRIC_KEY_SIZE size
+ */
 class SymmetricKey : public BytesContainer<SYMMETRIC_KEY_SIZE>{
 public:
 	SymmetricKey() : BytesContainer(){};

@@ -2,7 +2,7 @@
  * ClientDef.h
  *
  *  Created on: 13 Feb 2021
- *      Author: xmaster
+ *      Author: Roy Dar
  */
 
 #ifndef CLIENTDEF_H_
@@ -14,6 +14,9 @@
 #include "PublicKey.h"
 #include "SymmetricKey.h"
 
+/*
+ * A client object holds the information about each client, like ID, name, PK and SymmetricKey (after negotiation)
+ */
 class ClientDef {
 public:
 	ClientDef();

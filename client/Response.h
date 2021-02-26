@@ -15,8 +15,6 @@
 using boost::asio::ip::tcp;
 
 /*
- * Response
- * --------
  * An object representation of a response in our system
  */
 class Response

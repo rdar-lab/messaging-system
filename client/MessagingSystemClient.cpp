@@ -3,7 +3,7 @@
 // Author      : Roy Dar
 // Version     :
 // Copyright   : 
-// Description : Hello World in C++, Ansi-style
+// Description : A messaging system client implementation written in C++
 //============================================================================
 
 #include <iostream>
@@ -19,6 +19,7 @@
 using namespace std;
 
 int main(int argv, char* argc[]) {
+	// If there is a "test" parameter invoke all tests
 	if (argv>1 && std::string(argc[1])=="test")
 	{
 		TestingManager::performTests();

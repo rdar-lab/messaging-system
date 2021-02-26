@@ -2,7 +2,7 @@
  * EncryptionUtils.h
  *
  *  Created on: 13 Feb 2021
- *      Author: xmaster
+ *      Author: Roy Dar
  */
 
 #ifndef ENCRYPTIONUTILS_H_
@@ -13,6 +13,11 @@
 #include "PrivatePublicKeyPair.h"
 #include "SymmetricKey.h"
 
+/**
+ * The EncryptionUtils is responsible for the encapsulation of all the encryption related operations in this project.
+ * Such as: generation of keys, encryption and decryption...
+ * Currently supports only: for PKI: RSA, for symmetric encryption: AES 128
+ */
 class EncryptionUtils {
 public:
 	static PrivatePublicKeyPair generateKeypair(unsigned int algorithm);

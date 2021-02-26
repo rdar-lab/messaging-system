@@ -1,8 +1,9 @@
 /*
  * BinaryByteBuffer.h
+ * ------------------
  *
  *  Created on: 13 Feb 2021
- *      Author: xmaster
+ *      Author: Roy Dar
  */
 
 #ifndef BINARYBYTEBUFFER_H_
@@ -10,6 +11,10 @@
 
 #include "ByteBuffer.h"
 
+/*
+ * The binary byte buffer is a wrapper/adapter implementation with a binary array
+ * to the byte buffer interface
+ */
 class BinaryByteBuffer : public ByteBuffer {
 public:
 	BinaryByteBuffer(void *data, unsigned int len);

@@ -13,8 +13,6 @@
 #include "Response.h"
 
 /*
- * CommunicationManager
- * --------------------
  * The communication manager is responsible for the TCP layer.
  * This is a singleton class.
  *
@@ -22,32 +20,16 @@
 class CommunicationManager
 {
 public:
-	/*
-	 * static method to get the single instance
-	 */
 	static CommunicationManager* getInstance();
-
-	/*
-	 * Dtor
-	 */
 	virtual ~CommunicationManager();
 
-	/*
-	 * Runs the TCP server using the network card designated by 'host' and the 'port'
-	 */
 	void setParams(std::string host, unsigned int port);
 
 	Response*  sendRequest(Request* req);
 
 private:
-	/*
-	 * Ctor - private because this is a singleton
-	 */
 	CommunicationManager();
 
-	/*
-	 * The single instance
-	 */
 	static CommunicationManager *singleInstance;
 
 	std::string host;

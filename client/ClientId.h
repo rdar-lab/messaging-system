@@ -2,7 +2,7 @@
  * ClientId.h
  *
  *  Created on: 13 Feb 2021
- *      Author: xmaster
+ *      Author: Roy Dar
  */
 
 #ifndef CLIENTID_H_
@@ -11,6 +11,9 @@
 #include "BytesContainer.h"
 #include "Constants.h"
 
+/*
+ * A clientID in the system. An instance of BytesContainer of CLIENT_ID_SIZE size
+ */
 class ClientId : public BytesContainer<CLIENT_ID_SIZE>
 {
 public:

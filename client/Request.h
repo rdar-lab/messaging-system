@@ -13,8 +13,6 @@
 #include "ClientId.h"
 
 /*
- * Request
- * -------
  * An object implementation of the request in our system
  */
 class Request

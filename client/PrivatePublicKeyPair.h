@@ -2,7 +2,7 @@
  * PrivatePublicKeyPair.h
  *
  *  Created on: 13 Feb 2021
- *      Author: xmaster
+ *      Author: Roy Dar
  */
 
 #ifndef PRIVATEPUBLICKEYPAIR_H_
@@ -12,6 +12,9 @@
 #include "PrivateKey.h"
 #include "PublicKey.h"
 
+/*
+ * A PKI key pair in the system. Holds both the private and the public key, and can read and write those from str
+ */
 class PrivatePublicKeyPair {
 public:
 	PrivatePublicKeyPair();

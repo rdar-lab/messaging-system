@@ -11,16 +11,11 @@
 #include <iostream>
 
 /*
- * ByteBuffer
- * ----------
  * An abstract class that allows chunked communication with bytes
  */
 class ByteBuffer
 {
 public:
-	/*
-	 * Dtor
-	 */
 	virtual ~ByteBuffer();
 
 	/*
@@ -45,10 +40,6 @@ public:
 	void sendToStream(std::ostream &os);
 	void sendToStream(std::ostream &os, unsigned int amount);
 protected:
-
-	/*
-	 * Protected Ctor, since this is an abstract class
-	 */
 	ByteBuffer();
 	virtual unsigned int readDataInternal(void *destinationBuffer,
 			unsigned int lenToRead) = 0;

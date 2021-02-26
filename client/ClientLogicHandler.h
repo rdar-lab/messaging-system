@@ -2,7 +2,7 @@
  * ClientLogicHandler.h
  *
  *  Created on: 18 Feb 2021
- *      Author: xmaster
+ *      Author: Roy Dar
  */
 
 #ifndef CLIENTLOGICHANDLER_H_
@@ -14,6 +14,10 @@
 #include <list>
 #include "Message.h"
 
+/*
+ * This class is responsible for the implementation of the main logic actions of the client in the messaging system.
+ * Such as: Registration, sending and receiving messages, negotiation of keys...
+ */
 class ClientLogicHandler {
 public:
 	ClientLogicHandler();

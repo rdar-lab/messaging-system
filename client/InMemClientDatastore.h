@@ -2,7 +2,7 @@
  * InMemClientDatastore.h
  *
  *  Created on: 13 Feb 2021
- *      Author: xmaster
+ *      Author: Roy Dar
  */
 
 #ifndef INMEMCLIENTDATASTORE_H_
@@ -10,6 +10,9 @@
 
 #include "ClientDatastore.h"
 
+/**
+ * A client datastore which is implemented by holding all the information in memory
+ */
 class InMemClientDatastore : public ClientDatastore {
 public:
 	InMemClientDatastore();

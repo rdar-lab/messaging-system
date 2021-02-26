@@ -13,21 +13,12 @@
 #include <boost/asio.hpp>
 
 /*
- * CommunicationSerilizationHelper
- * -------------------------------
  * Helper for sending and reading data from the socket
  */
 class CommunicationSerilizationHelper
 {
 public:
-	/*
-	 * Ctor
-	 */
 	CommunicationSerilizationHelper(boost::asio::ip::tcp::socket *socket);
-
-	/*
-	 * Dtor
-	 */
 	virtual ~CommunicationSerilizationHelper();
 
 	/*
@@ -82,6 +73,9 @@ public:
 	 */
 	void writeBytes(ByteBuffer *data);
 
+	/*
+	 * Writes a buffer of bytes of specified length
+	 */
 	void writeBytes(unsigned char *buffer, unsigned int len);
 private:
 	// The socket to be used
