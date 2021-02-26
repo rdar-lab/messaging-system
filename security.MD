@@ -25,6 +25,7 @@ Can a client masquerade as another client?
 Yes, the protocol does not block any user for communicate "as if" it was another user.
 The attacker will not be able to read any messages (since they are encrypted), but will be able to cause those messages to be deleted by simply invoking the "get messages" request to the server.
 He will also be able to send a symmetric key to other users which did not have a negotiation in place and establish a fake communication with them.
+
 ``` ISSUE_1 ```
 
 #### (T)Tampering
