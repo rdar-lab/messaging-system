@@ -11,6 +11,10 @@
 #include <iomanip>
 #include <vector>
 
+#include <boost/uuid/uuid.hpp>            // uuid class
+#include <boost/uuid/uuid_generators.hpp> // generators
+#include <boost/uuid/uuid_io.hpp>         // streaming operators etc.
+
 Utils::Utils() {
 }
 
@@ -187,4 +191,13 @@ unsigned short Utils::base64Decode(std::string b64, const void *buff,
 	  }
 
 	  return buffWriteLoc;
+}
+
+std::string Utils::generateTmpFilename() {
+    boost::uuids::uuid uuid = boost::uuids::random_generator()();
+
+    std::stringstream uuid_stream;
+    uuid_stream << uuid;
+
+	return std::string(P_tmpdir) + std::string("/") + uuid_stream.str();
 }

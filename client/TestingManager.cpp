@@ -89,13 +89,13 @@ void TestingManager::performTests() {
 			}
 		}
 
-		std::string tmpFile = std::string(std::tmpnam(NULL));
+		std::string tmpFile = std::string(Utils::generateTmpFilename());
 		std::ofstream out{tmpFile, std::ios::binary};
 		out << "This is the the line in the file" << std::endl;
 		out.close();
 
-		std::string tmpFile2 = std::string(std::tmpnam(NULL));
-		std::string tmpFile3 = std::string(std::tmpnam(NULL));
+		std::string tmpFile2 = std::string(Utils::generateTmpFilename());
+		std::string tmpFile3 = std::string(Utils::generateTmpFilename());
 		EncryptionUtils::symmetricEncryptFile(ENCRYPTION_ALGORITHM_AES, key, tmpFile, tmpFile2);
 		EncryptionUtils::symmetricDecryptFile(ENCRYPTION_ALGORITHM_AES, key, tmpFile2, tmpFile3);
 		std::ifstream in{tmpFile3, std::ios::binary};
@@ -372,7 +372,7 @@ void TestingManager::performTests() {
 	}
 	{
 		std::cout << "Test 15 - Send file message" << std::endl;
-		std::string tmpFile = std::string(std::tmpnam(NULL));
+		std::string tmpFile = std::string(Utils::generateTmpFilename());
 		std::ofstream out{tmpFile, std::ios::binary};
 		out << "This is the the line in the file" << std::endl;
 		out.close();

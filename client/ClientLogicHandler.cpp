@@ -240,11 +240,11 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 					break;
 				case MESSAGE_TYPE_FILE_MESSAGE:
 					{
-						std::string encryptedFileName(std::tmpnam(NULL));
+						std::string encryptedFileName(Utils::generateTmpFilename());
 						std::ofstream out{encryptedFileName, std::ios::binary};
 						resp->getPayload()->sendToStream(out, messageLen);
 						out.close();
-						std::string messageFileName(std::tmpnam(NULL));
+						std::string messageFileName(Utils::generateTmpFilename());
 						EncryptionUtils::symmetricDecryptFile(
 														ENCRYPTION_ALGORITHM_AES,
 														messageFromClient.getSymmetricKey(),
@@ -383,7 +383,7 @@ void ClientLogicHandler::performSendFile(std::string clientName,
 		throw std::runtime_error("client symmetric key not loaded. First ask for key");
 	}
 
-	std::string tmpFileName(std::tmpnam(NULL));
+	std::string tmpFileName(Utils::generateTmpFilename());
 
 	EncryptionUtils::symmetricEncryptFile(
 				ENCRYPTION_ALGORITHM_AES,

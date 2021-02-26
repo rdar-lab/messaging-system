@@ -44,9 +44,14 @@ public:
 	 * Reads Base64 encoded string to a binary array
 	 */
 	static unsigned short base64Decode(std::string b64, const void *buff, unsigned short sizeOfBuffer);
-	virtual ~Utils();
+
+	/*
+	 * Generates a name for a tmpFile
+	 */
+	static std::string generateTmpFilename();
 private:
 	Utils();
+	virtual ~Utils();
 };
 
 #endif /* UTILS_H_ */
