@@ -40,6 +40,8 @@ class ServerCommunicationManager:
     # noinspection PyBroadException
     def __handle_data(self, sock, addr):
         try:
+            _logger.info("{0} - Handing new connection".format(addr))
+            sock.settimeout(SOCKET_TIMEOUT)
             request_reader = RequestReader(sock)
             req = request_reader.read_request()
             _logger.info("{0} - Request = {1}".format(addr, req))

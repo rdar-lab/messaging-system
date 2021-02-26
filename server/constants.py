@@ -50,3 +50,5 @@ MESSAGE_TYPE_SIZE = 1
 # It is not recommended
 STORE_FILES_IN_DB = False
 FILE_STORE_FOLDER = "files/"
+
+SOCKET_TIMEOUT = 10
