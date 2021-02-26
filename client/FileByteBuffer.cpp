@@ -25,17 +25,26 @@ FileByteBuffer::~FileByteBuffer()
 
 unsigned int FileByteBuffer::readDataInternal(void *destinationBuffer,
 		unsigned int lenToRead)
-{
-	int amount = this->fileStream.readsome((char*)destinationBuffer, lenToRead);
 
-	if (amount <= 0)
-	{
+{
+	if (!this->fileStream.good()) {
 		throw std::runtime_error(
-				"Invalid state detected. Amount read is not positive");
+			"Invalid state detected. Stream error detected");
 	}
 
-	this->sizeRead = this->sizeRead + amount;
-	return amount;
+	if (lenToRead > this->getBytesLeft()) {
+		lenToRead = this->getBytesLeft();
+	}
+
+	this->fileStream.read((char*)destinationBuffer, lenToRead);
+
+	if (this->fileStream.fail()) {
+		throw std::runtime_error(
+			"Invalid state detected. Failure detected");
+	}
+
+	this->sizeRead = this->sizeRead + lenToRead;
+	return lenToRead;
 }
 
 unsigned int FileByteBuffer::getBytesLeft()

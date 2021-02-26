@@ -23,10 +23,16 @@ CommunicationManager::CommunicationManager()
 {
 	this->host = "";
 	this->port = 0;
+	this->io_service = new boost::asio::io_service();
+	this->io_context = new boost::asio::io_context();
+	this->resolver = new tcp::resolver(*this->io_context);
 }
 
 CommunicationManager::~CommunicationManager()
 {
+	delete this->resolver;
+	delete this->io_context;
+	delete this->io_service;
 }
 
 CommunicationManager *CommunicationManager::singleInstance = NULL;
@@ -47,11 +53,8 @@ void CommunicationManager::setParams(std::string host, unsigned int port) {
 }
 
 Response* CommunicationManager::sendRequest(Request *req) {
-	boost::asio::io_service io_service;
-	boost::asio::io_context io_context;
-	tcp::resolver resolver(io_context);
-	boost::shared_ptr<tcp::socket> socket(new tcp::socket(io_service));
-	boost::asio::connect(*socket, resolver.resolve(host, std::to_string(port)));
+	boost::shared_ptr<tcp::socket> socket(new tcp::socket(*io_service));
+	boost::asio::connect(*socket, resolver->resolve(host, std::to_string(port)));
 	RequestWriter writer(socket);
 	writer.writeRequest(req);
 	ResponseReader reader(socket);

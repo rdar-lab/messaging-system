@@ -39,13 +39,16 @@ class ServerCommunicationManager:
 
     # noinspection PyBroadException
     def __handle_data(self, sock, addr):
+        request_handler = RequestHandler(self.__storage_manager)
+        req = None
+        resp = None
+
         try:
             _logger.info("{0} - Handing new connection".format(addr))
             sock.settimeout(SOCKET_TIMEOUT)
             request_reader = RequestReader(sock)
             req = request_reader.read_request()
             _logger.info("{0} - Request = {1}".format(addr, req))
-            request_handler = RequestHandler(self.__storage_manager)
             resp = request_handler.handle_request(req)
         except Exception:
             _logger.exception("{0} - Error while handling request".format(addr))
@@ -66,3 +69,7 @@ class ServerCommunicationManager:
         except Exception:
             pass
 
+        try:
+            request_handler.handle_post_request(req, resp)
+        except Exception:
+            _logger.exception("{0} - Error while handling post request".format(addr))

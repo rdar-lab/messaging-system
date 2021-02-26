@@ -14,24 +14,27 @@
 unsigned int readNum(boost::asio::ip::tcp::socket *socket,
 		unsigned short sizeToRead)
 {
-	char buffer[sizeToRead];
+	char* buffer = new char[sizeToRead];
 	size_t bytesRead = boost::asio::read(*socket,
 			boost::asio::buffer(buffer, sizeToRead));
 	if (bytesRead < sizeToRead)
 	{
+		delete[] buffer;
 		throw std::runtime_error("Socket closed");
 	}
 	return Utils::convertToNum(buffer, sizeToRead);
+	delete[] buffer;
 }
 
 void writeNum(boost::asio::ip::tcp::socket *socket, unsigned int num,
 		unsigned short sizeToWrite)
 {
-	char buffer[sizeToWrite];
+	char* buffer = new char[sizeToWrite];
 	Utils::convertToBytes(num, buffer, sizeToWrite);
 
 	size_t bytesWrote = boost::asio::write(*socket,
 			boost::asio::buffer(buffer, sizeToWrite));
+	delete[] buffer;
 	if (bytesWrote != sizeToWrite)
 	{
 		throw std::runtime_error("Incorrect write size detected");
@@ -85,15 +88,17 @@ std::string CommunicationSerilizationHelper::readStr(unsigned short size)
 		throw std::runtime_error("Str is over the maximum length");
 	}
 
-	char buffer[size + 1];
+	char* buffer = new char[size + 1];
 	size_t bytesRead = boost::asio::read(*socket,
 			boost::asio::buffer(buffer, size));
 	if (bytesRead < size)
 	{
+		delete[] buffer;
 		throw std::runtime_error("Socket closed");
 	}
 	buffer[size] = 0;
 	return std::string(buffer);
+	delete[] buffer;
 }
 
 void CommunicationSerilizationHelper::writeStr(std::string data)

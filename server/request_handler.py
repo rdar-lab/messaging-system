@@ -119,7 +119,6 @@ class RequestHandler:
     def __handle_get_messages_request(self, req):
         client_id = req.get_client_id()
         messages = self.__storage_manager.get_messages(client_id)
-        self.__storage_manager.remove_messages(messages)
 
         response_code = RESPONSE_CODE_LIST_OF_MESSAGES
         response_payload_map = {
@@ -127,3 +126,11 @@ class RequestHandler:
         }
 
         return response_code, response_payload_map
+
+    def handle_post_request(self, req: Request, resp: Response):
+        if req is not None and \
+                resp is not None and \
+                req.get_request_code() == REQUEST_CODE_GET_MESSAGES and \
+                RESPONSE_PAYLOAD_MESSAGES in resp.get_payload_map():
+            messages = resp.get_payload_map()[RESPONSE_PAYLOAD_MESSAGES]
+            self.__storage_manager.remove_messages(messages)
