@@ -48,6 +48,7 @@ ClientId ClientLogicHandler::performRegister(std::string clientName){
 	PrivatePublicKeyPair keyPair = EncryptionUtils::generateKeypair(ENCRYPTION_ALGORITHM_RSA);
 	PublicKey publicKey = keyPair.getPublicKey();
 
+	// Write the payload (Name + PK of client)
 	unsigned char payload[STR_SIZE+PUBLIC_KEY_SIZE];
 	std::memset(payload, 0, sizeof(payload));
 	std::strncpy((char *)payload, clientName.c_str(), STR_SIZE-1);
@@ -59,6 +60,7 @@ ClientId ClientLogicHandler::performRegister(std::string clientName){
 	this->resp = CommunicationManager::getInstance()->sendRequest(&req);
 	if (this->resp->getResponseCode() == RESPONSE_CODE_REG_SUCCESS)
 	{
+		// Read the client ID this client got, and save it
 		unsigned char clientIdBuffer[CLIENT_ID_SIZE];
 		this->resp->getPayload()->readData(clientIdBuffer, CLIENT_ID_SIZE);
 		ClientMetadataManager::getInstance()->update(clientName, ClientId(clientIdBuffer), keyPair);
@@ -78,14 +80,20 @@ void ClientLogicHandler::performGetClientsList(){
 		if (resp->getPayload()!=NULL){
 			while (resp->getPayload()->getBytesLeft()>0)
 			{
+				// Read the client ID
 				unsigned char clientIdBuffer[CLIENT_ID_SIZE];
 				resp->getPayload()->readData(clientIdBuffer, CLIENT_ID_SIZE);
 				ClientId clientId(clientIdBuffer);
+
+				// Read the name
 				char nameBuff[STR_SIZE];
 				resp->getPayload()->readData(nameBuff, STR_SIZE);
 				nameBuff[STR_SIZE - 1] = 0;
 				std::string name(nameBuff);
+
 				ClientDef client(clientId,  name);
+
+				// Add the client if it does not already exist
 				if (!ClientDatastore::getInstance()->clientExists(clientId)){
 					ClientDatastore::getInstance()->addClient(client);
 				}
@@ -108,6 +116,7 @@ void ClientLogicHandler::performGetClientPublicKey(std::string clientName){
 		return;
 	}
 
+	// Send the requested client ID in payload
 	ClientId clientId = client.getId();
 	unsigned char payload[CLIENT_ID_SIZE];
 	std::memset(payload, 0, sizeof(payload));
@@ -122,11 +131,13 @@ void ClientLogicHandler::performGetClientPublicKey(std::string clientName){
 		resp->getPayload()->readData(clientIdBuffer, CLIENT_ID_SIZE);
 		ClientId responseClientId(clientIdBuffer);
 
+		// We will check that the response client ID matches the requested client ID
 		if (responseClientId != clientId)
 		{
 			throw std::runtime_error("Response client ID does not match the request");
 		} else
 		{
+			// Read the PK and update the client entry in the local store
 			unsigned char publicKeyBuffer[PUBLIC_KEY_SIZE];
 			resp->getPayload()->readData(publicKeyBuffer, PUBLIC_KEY_SIZE);
 			PublicKey publicKey(publicKeyBuffer);
@@ -150,10 +161,12 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 		if (resp->getPayload()!=NULL){
 			while (resp->getPayload()->getBytesLeft()>0)
 			{
+				// Read the sender client ID
 				unsigned char clientIdBuffer[CLIENT_ID_SIZE];
 				resp->getPayload()->readData(clientIdBuffer, CLIENT_ID_SIZE);
 				ClientId messageClientId(clientIdBuffer);
 
+				// Match the client ID with the local store
 				ClientDef messageFromClient;
 				if (!ClientDatastore::getInstance()->clientExists(messageClientId)){
 					std::cout << "ERR: Got unknown message client id: " << messageClientId << std::endl;
@@ -162,12 +175,15 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 					messageFromClient = ClientDatastore::getInstance()->getClient(messageClientId);
 				}
 
+				// Read the message ID
 				unsigned char messageIdBuffer[MESSAGE_ID_SIZE];
 				resp->getPayload()->readData(messageIdBuffer, MESSAGE_ID_SIZE);
 				unsigned int messageId = Utils::convertToNum(messageIdBuffer, MESSAGE_ID_SIZE);
 
+				// Read the message type
 				unsigned char messageType = resp->getPayload()->readByte();
 
+				// Read the message length
 				unsigned char messageLenBuffer[MESSAGE_LENGTH_SIZE];
 				resp->getPayload()->readData(messageLenBuffer, MESSAGE_LENGTH_SIZE);
 				const unsigned int messageLen = Utils::convertToNum(messageLenBuffer, MESSAGE_LENGTH_SIZE);
@@ -181,6 +197,7 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 				switch (messageType){
 				case MESSAGE_TYPE_ENC_KEY_REQUEST:
 					{
+						// A request for symmetric key does not have any payload
 						if (messageLen > 0)
 						{
 							throw std::runtime_error("Message len incorrect. expected length of 0");
@@ -191,13 +208,16 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 					break;
 				case MESSAGE_TYPE_ENC_KEY_RESP:
 					{
+						// Read the key we got
 						unsigned char* encryptedKeyBuffer = new unsigned char[messageLen];
 						resp->getPayload()->readData(encryptedKeyBuffer, messageLen);
 
+						// We only update client entries on the local store, which does not have a key
 						if (messageFromClient.getSymmetricKey().isEmpty())
 						{
 							unsigned char decryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
 
+							// Decrypt the key using my private key
 							EncryptionUtils::pkiDecrypt(
 									ENCRYPTION_ALGORITHM_RSA,
 									ClientMetadataManager::getInstance()->getPrivatePublicKeyPair().getPrivateKey(),
@@ -207,6 +227,7 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 									SYMMETRIC_KEY_SIZE
 							);
 
+							// Update in local store
 							SymmetricKey key(decryptedKeyBuffer);
 							messageFromClient.setSymmetricKey(key);
 							ClientDatastore::getInstance()->updateClient(messageFromClient);
@@ -222,41 +243,60 @@ std::list<Message> ClientLogicHandler::performGetMessages(){
 					break;
 				case MESSAGE_TYPE_TEXT_MESSAGE:
 					{
+						// Read the encrypted data
 						unsigned char* messageBuffer = new unsigned char[messageLen];
 						resp->getPayload()->readData(messageBuffer, messageLen);
 
-						unsigned char* decryptedMessageBuffer = new unsigned char[messageLen+EXTRA_MESSAGE_BUFFER];
-						std::memset(decryptedMessageBuffer, 0, messageLen+EXTRA_MESSAGE_BUFFER);
-						EncryptionUtils::symmetricDecrypt(
+						if (messageFromClient.getSymmetricKey().isEmpty())
+						{
+							messageContentTxt = "Text message cannot be decrypted. Key is missing";
+						}
+						else {
+							// Decrypt the message using the SymmetricKey
+							unsigned char* decryptedMessageBuffer = new unsigned char[messageLen + EXTRA_MESSAGE_BUFFER];
+							std::memset(decryptedMessageBuffer, 0, messageLen + EXTRA_MESSAGE_BUFFER);
+							EncryptionUtils::symmetricDecrypt(
 								ENCRYPTION_ALGORITHM_AES,
 								messageFromClient.getSymmetricKey(),
 								(void*)messageBuffer,
 								messageLen,
 								(void*)decryptedMessageBuffer,
-								messageLen+EXTRA_MESSAGE_BUFFER
-						);
+								messageLen + EXTRA_MESSAGE_BUFFER
+							);
 
-						std::string msgText((char*)decryptedMessageBuffer);
-						messageContentTxt = msgText;
+							std::string msgText((char*)decryptedMessageBuffer);
+							messageContentTxt = msgText;
+							delete[] decryptedMessageBuffer;
+						}
+
 						delete[] messageBuffer;
-						delete[] decryptedMessageBuffer;
 					}
 					break;
 				case MESSAGE_TYPE_FILE_MESSAGE:
 					{
+						// First we save the file to a local temp file
 						std::string encryptedFileName(Utils::generateTmpFilename());
 						std::ofstream out{encryptedFileName, std::ios::binary};
 						resp->getPayload()->sendToStream(out, messageLen);
 						out.close();
-						std::string messageFileName(Utils::generateTmpFilename());
-						EncryptionUtils::symmetricDecryptFile(
-														ENCRYPTION_ALGORITHM_AES,
-														messageFromClient.getSymmetricKey(),
-														encryptedFileName,
-														messageFileName
-												);
+
+						if (messageFromClient.getSymmetricKey().isEmpty())
+						{
+							messageContentTxt = "File message cannot be decrypted. Key is missing";
+						}
+						else {
+							// We stream the decryption of the file to another file					
+							std::string messageFileName(Utils::generateTmpFilename());
+							EncryptionUtils::symmetricDecryptFile(
+								ENCRYPTION_ALGORITHM_AES,
+								messageFromClient.getSymmetricKey(),
+								encryptedFileName,
+								messageFileName
+							);
+							messageContentTxt = std::string("FILE: ") + messageFileName;
+						}
+							
 						std::remove(encryptedFileName.c_str());
-						messageContentTxt = std::string("FILE: ") + messageFileName;
 					}
 
 					break;
@@ -279,11 +319,18 @@ unsigned int ClientLogicHandler::sendMessage(ClientDef destinationClient, unsign
 }
 
 unsigned int ClientLogicHandler::sendMessage(ClientDef destinationClient, unsigned char messageType, ByteBuffer* messageContentBuffer){
-	unsigned const int payloadLen = CLIENT_ID_SIZE + MESSAGE_ID_SIZE + 1;
+	// Message header payload = CLIENT ID + MESSAGE_TYPE + MESSAGE_LENGTH
+	unsigned const int payloadLen = CLIENT_ID_SIZE + MESSAGE_LENGTH_SIZE + 1;
 	unsigned char payload[payloadLen];
 	std::memset(payload, 0, sizeof(payload));
+	
+	// Write the client ID
 	destinationClient.getId().write(payload);
+
+	// Write the message type
 	payload[CLIENT_ID_SIZE] = messageType;
+
+	// Write the message len
 	Utils::convertToBytes(messageContentBuffer->getBytesLeft(), payload+CLIENT_ID_SIZE+1, MESSAGE_LENGTH_SIZE);
 
 	ByteBuffer *headersBuffer = new BinaryByteBuffer(payload, payloadLen);
@@ -311,6 +358,7 @@ void ClientLogicHandler::performSendTextMessage(std::string clientName, std::str
 		throw std::runtime_error("client symmetric key not loaded. First ask for key");
 	}
 
+	// Encrypt the text message before sending it
 	unsigned char* encryptedMessageBuffer = new unsigned char[messageText.length()+EXTRA_MESSAGE_BUFFER];
 	std::memset(encryptedMessageBuffer, 0, messageText.length()+EXTRA_MESSAGE_BUFFER);
 	unsigned int encryptedTextLen = EncryptionUtils::symmetricEncrypt(
@@ -362,6 +410,7 @@ void ClientLogicHandler::performSendSymmetricKey(std::string clientName){
 		ClientDatastore::getInstance()->updateClient(client);
 	}
 
+	// Encrypt the symmetric key with the destination user public key before sending it
 	unsigned char decryptedKeyBuffer[SYMMETRIC_KEY_SIZE];
 	client.getSymmetricKey().write(decryptedKeyBuffer);
 	unsigned char encryptedKeyBuffer[BUFFER_SIZE];
@@ -390,6 +439,7 @@ void ClientLogicHandler::performSendFile(std::string clientName,
 
 	std::string tmpFileName(Utils::generateTmpFilename());
 
+	// Encrypt the file before sending it
 	EncryptionUtils::symmetricEncryptFile(
 				ENCRYPTION_ALGORITHM_AES,
 				client.getSymmetricKey(),
