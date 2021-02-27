@@ -23,7 +23,7 @@ We will use STRIDE to mark each vulnerability that is detected.
 
 Can a client masquerade as another client?
 Yes, the protocol does not block any user for communicate "as if" it was another user.
-The attacker will not be able to read any messages (since they are encrypted), but will be able to cause those messages to be deleted by simply invoking the "get messages" request to the server.
+An attacker will not be able to read any messages (since they are encrypted), but will be able to cause those messages to be deleted by simply invoking the "get messages" request to the server.
 He will also be able to send a symmetric key to other users which did not have a negotiation in place and establish a fake communication with them.
 
 ``` ISSUE_1 ```
@@ -54,7 +54,7 @@ consume the entire server disk space
 #### (E)Elevation of privileges
 
 Can a client elevate it's permission?
-Since the server is not limited in it's permission, it a client manages to gain remote code execution capability on the server it will be able to use the full permissions of the server's user.
+Yes, since the server is not limited in it's permission, if a client manages to gain remote code execution capability on the server it will be able to use the full permissions of the server's user.
 
 ``` ISSUE_4 ```
 
