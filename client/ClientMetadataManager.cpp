@@ -32,7 +32,6 @@ void ClientMetadataManager::readData() {
 			getline(clientMetadataFile, line);
 			this->clientId = ClientId(line);
 
-			// TODO: convert to BASE64
 			getline(clientMetadataFile, line);
 			this->privatePublicKeyPair = PrivatePublicKeyPair(line);
 
