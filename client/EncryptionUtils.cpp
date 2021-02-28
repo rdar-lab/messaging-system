@@ -110,6 +110,11 @@ unsigned int EncryptionUtils::pkiEncrypt(unsigned short algorithm,
 		PublicKey publicKey, void *source, unsigned int sourceLen,
 		void *destination, unsigned int destLen) {
 
+	if (publicKey.isEmpty())
+	{
+		throw std::runtime_error("Public key is empty");
+	}
+
 	unsigned char publicKeyBytes[PUBLIC_KEY_SIZE];
 	std::memset(publicKeyBytes, 0, sizeof(publicKeyBytes));
 	publicKey.write(publicKeyBytes);
@@ -145,6 +150,12 @@ unsigned int EncryptionUtils::pkiEncrypt(unsigned short algorithm,
 
 unsigned int EncryptionUtils::pkiDecrypt(int algorithm, PrivateKey privateKey,
 		void *source, unsigned int sourceLen, void *destination, unsigned int destLen) {
+	if (privateKey.isEmpty())
+	{
+		throw std::runtime_error("Private key is empty");
+	}
+
+
 	unsigned char privateKeyBytes[PRIVATE_KEY_SIZE];
 	std::memset(privateKeyBytes, 0, sizeof(privateKeyBytes));
 	privateKey.write(privateKeyBytes);
@@ -181,6 +192,11 @@ unsigned int EncryptionUtils::pkiDecrypt(int algorithm, PrivateKey privateKey,
 unsigned int EncryptionUtils::symmetricEncrypt(unsigned short algorithm,
 		SymmetricKey key, void *source, unsigned int sourceLen,
 		void *destination, unsigned int destLen) {
+	if (key.isEmpty())
+	{
+		throw std::runtime_error("Key is empty");
+	}
+
 	CryptoPP::CBC_Mode< CryptoPP::AES >::Encryption e;
 	unsigned char keyBuffer[SYMMETRIC_KEY_SIZE];
 	key.write(keyBuffer);
@@ -213,6 +229,11 @@ unsigned int EncryptionUtils::symmetricEncrypt(unsigned short algorithm,
 unsigned int EncryptionUtils::symmetricDecrypt(unsigned short algorithm,
 		SymmetricKey key, void *source, unsigned int sourceLen,
 		void *destination, unsigned int destLen) {
+	if (key.isEmpty())
+	{
+		throw std::runtime_error("Key is empty");
+	}
+
 	CryptoPP::CBC_Mode< CryptoPP::AES >::Decryption d;
 	unsigned char keyBuffer[SYMMETRIC_KEY_SIZE];
 	key.write(keyBuffer);
@@ -245,6 +266,11 @@ unsigned int EncryptionUtils::symmetricDecrypt(unsigned short algorithm,
 void EncryptionUtils::symmetricEncryptFile(unsigned short algorithm,
 		SymmetricKey key, std::string sourceFileName,
 		std::string destFileName) {
+	if (key.isEmpty())
+	{
+		throw std::runtime_error("Key is empty");
+	}
+
 	CryptoPP::CBC_Mode< CryptoPP::AES >::Encryption e;
 	unsigned char keyBuffer[SYMMETRIC_KEY_SIZE];
 	key.write(keyBuffer);
@@ -290,6 +316,11 @@ void EncryptionUtils::symmetricEncryptFile(unsigned short algorithm,
 void EncryptionUtils::symmetricDecryptFile(unsigned short algorithm,
 		SymmetricKey key, std::string sourceFileName,
 		std::string destFileName) {
+	if (key.isEmpty())
+	{
+		throw std::runtime_error("Key is empty");
+	}
+
 	CryptoPP::CBC_Mode< CryptoPP::AES >::Decryption d;
 	unsigned char keyBuffer[SYMMETRIC_KEY_SIZE];
 	key.write(keyBuffer);

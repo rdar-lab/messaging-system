@@ -19,6 +19,7 @@ InteractiveMenuManager::~InteractiveMenuManager() {
 }
 
 int InteractiveMenuManager::showMenuAndGetUserAction() {
+	std::cout << "********************************" << std::endl;
 	std::cout << "MessageU client at your service." << std::endl;
 	std::cout << std::endl;
 	std::cout << "1) Register" << std::endl;
