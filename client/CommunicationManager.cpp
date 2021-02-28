@@ -58,5 +58,12 @@ Response* CommunicationManager::sendRequest(Request *req) {
 	RequestWriter writer(socket);
 	writer.writeRequest(req);
 	ResponseReader reader(socket);
-	return reader.readResponse();
+	Response* response = reader.readResponse();
+
+	if (response->getResponseCode() == RESPONSE_CODE_GENERAL_ERROR)
+	{
+		delete response;
+		throw std::runtime_error("Got general error response from server. Check server logs for details");
+	}
+	return response;
 }
